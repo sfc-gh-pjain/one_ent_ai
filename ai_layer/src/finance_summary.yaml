@@ -1,0 +1,147 @@
+name: finance_summary
+description: |
+  Financial analytics covering revenue recognition, cost center budgets, and forecast
+  variance. Simulated domain to demonstrate multi-domain semantic view federation and
+  agent routing across disparate business functions.
+
+tables:
+  - name: REVENUE_SUMMARY
+    description: Monthly revenue recognition by product line and region. Powers executive dashboards and board reporting.
+    base_table:
+      database: DEMO
+      schema: HEALTHCARE_DEMO
+      table: FINANCE_REVENUE_SUMMARY
+    dimensions:
+      - name: PERIOD
+        expr: PERIOD
+        description: Fiscal period (YYYY-MM format)
+        data_type: TEXT
+      - name: PRODUCT_LINE
+        expr: PRODUCT_LINE
+        description: Revenue product line
+        data_type: TEXT
+        sample_values:
+          - Oncology Portfolio
+          - Immunology Portfolio
+          - Cardiology Portfolio
+          - Primary Care Portfolio
+          - Specialty Biologics
+      - name: REGION
+        expr: REGION
+        description: Revenue region
+        data_type: TEXT
+        sample_values:
+          - North America
+          - Europe
+          - Asia Pacific
+          - Latin America
+      - name: REVENUE_TYPE
+        expr: REVENUE_TYPE
+        description: Type of revenue
+        data_type: TEXT
+        sample_values:
+          - Product Sales
+          - Licensing
+          - Royalties
+          - Services
+    facts:
+      - name: ACTUAL_REVENUE
+        expr: ACTUAL_REVENUE
+        description: Actual recognized revenue for the period (millions)
+        data_type: NUMBER
+      - name: BUDGET_REVENUE
+        expr: BUDGET_REVENUE
+        description: Budgeted revenue target for the period (millions)
+        data_type: NUMBER
+      - name: FORECAST_REVENUE
+        expr: FORECAST_REVENUE
+        description: Latest forecast for the period (millions)
+        data_type: NUMBER
+      - name: VARIANCE_TO_BUDGET
+        expr: "ACTUAL_REVENUE - BUDGET_REVENUE"
+        description: Revenue variance vs budget (positive = beat, negative = miss)
+        data_type: NUMBER
+      - name: VARIANCE_PCT
+        expr: "(ACTUAL_REVENUE - BUDGET_REVENUE) / NULLIF(BUDGET_REVENUE, 0) * 100"
+        description: Percentage variance to budget
+        data_type: NUMBER
+      - name: FORECAST_ACCURACY
+        expr: "1.0 - ABS(ACTUAL_REVENUE - FORECAST_REVENUE) / NULLIF(FORECAST_REVENUE, 0)"
+        description: Forecast accuracy ratio (1.0 = perfect, lower = less accurate)
+        data_type: NUMBER
+
+  - name: COST_CENTERS
+    description: Operating expense tracking by cost center and category. Supports budget management and spend optimization.
+    base_table:
+      database: DEMO
+      schema: HEALTHCARE_DEMO
+      table: FINANCE_COST_CENTERS
+    dimensions:
+      - name: COST_CENTER_ID
+        expr: COST_CENTER_ID
+        description: Unique cost center identifier
+        data_type: TEXT
+      - name: COST_CENTER_NAME
+        expr: COST_CENTER_NAME
+        description: Cost center name
+        data_type: TEXT
+        sample_values:
+          - R&D Oncology
+          - Commercial Operations
+          - Medical Affairs
+          - Manufacturing
+          - General & Admin
+      - name: EXPENSE_CATEGORY
+        expr: EXPENSE_CATEGORY
+        description: Category of expense
+        data_type: TEXT
+        sample_values:
+          - Personnel
+          - Clinical Trials
+          - Marketing
+          - Technology
+          - Facilities
+      - name: PERIOD
+        expr: PERIOD
+        description: Fiscal period
+        data_type: TEXT
+    facts:
+      - name: ACTUAL_SPEND
+        expr: ACTUAL_SPEND
+        description: Actual spending for the period (millions)
+        data_type: NUMBER
+      - name: BUDGET_ALLOCATION
+        expr: BUDGET_ALLOCATION
+        description: Budget allocated for the period (millions)
+        data_type: NUMBER
+      - name: BUDGET_REMAINING
+        expr: "BUDGET_ALLOCATION - ACTUAL_SPEND"
+        description: Remaining budget (positive = under budget, negative = over)
+        data_type: NUMBER
+      - name: BURN_RATE_PCT
+        expr: "ACTUAL_SPEND / NULLIF(BUDGET_ALLOCATION, 0) * 100"
+        description: Percentage of budget consumed
+        data_type: NUMBER
+
+verified_queries:
+  - name: revenue_variance
+    question: What is the revenue variance by product line?
+    sql: |
+      SELECT PRODUCT_LINE, REGION,
+             SUM(ACTUAL_REVENUE) AS total_actual,
+             SUM(BUDGET_REVENUE) AS total_budget,
+             SUM(ACTUAL_REVENUE) - SUM(BUDGET_REVENUE) AS variance
+      FROM DEMO.HEALTHCARE_DEMO.FINANCE_REVENUE_SUMMARY
+      GROUP BY PRODUCT_LINE, REGION
+      ORDER BY variance DESC
+  - name: cost_center_burn
+    question: Which cost centers are over budget?
+    sql: |
+      SELECT COST_CENTER_NAME, EXPENSE_CATEGORY,
+             SUM(ACTUAL_SPEND) AS total_spend,
+             SUM(BUDGET_ALLOCATION) AS total_budget,
+             SUM(ACTUAL_SPEND) - SUM(BUDGET_ALLOCATION) AS overage
+      FROM DEMO.HEALTHCARE_DEMO.FINANCE_COST_CENTERS
+      WHERE ACTUAL_SPEND > BUDGET_ALLOCATION
+      GROUP BY COST_CENTER_NAME, EXPENSE_CATEGORY
+      ORDER BY overage DESC

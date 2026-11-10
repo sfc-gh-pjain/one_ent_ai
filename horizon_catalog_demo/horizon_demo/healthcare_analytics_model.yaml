@@ -1,0 +1,104 @@
+name: Healthcare Analytics
+description: >-
+  Provides insights into patient demographics, visit patterns, and revenue
+  metrics across departments and insurance providers.
+tables:
+  - name: patient_analytics
+    base_table:
+      database: HORIZON_DEMO_DB
+      schema: HEALTHCARE
+      table: PATIENT_ANALYTICS
+    primary_key:
+      columns:
+        - PATIENT_ID
+    columns:
+      - name: PATIENT_ID
+        kind: dimension
+        expr: PATIENT_ID
+        data_type: NUMBER
+        description: Unique patient identifier
+      - name: AGE
+        kind: dimension
+        expr: AGE
+        data_type: NUMBER
+        description: Patient age in years
+      - name: GENDER
+        kind: dimension
+        expr: GENDER
+        data_type: VARCHAR
+        description: Patient gender (M or F)
+      - name: DEPARTMENT
+        kind: dimension
+        expr: DEPARTMENT
+        data_type: VARCHAR
+        description: Medical department (CARDIOLOGY, ONCOLOGY, NEUROLOGY, GENERAL)
+      - name: INSURANCE_PROVIDER
+        kind: dimension
+        expr: INSURANCE_PROVIDER
+        data_type: VARCHAR
+        description: Insurance company name (Blue Cross, Aetna, UnitedHealth, Cigna, Kaiser Permanente)
+      - name: STATE
+        kind: dimension
+        expr: STATE
+        data_type: VARCHAR
+        description: Patient state (2-letter code)
+      - name: TOTAL_APPOINTMENTS
+        kind: measure
+        expr: TOTAL_APPOINTMENTS
+        data_type: NUMBER
+        description: Total number of appointments for this patient
+      - name: COMPLETED_VISITS
+        kind: measure
+        expr: COMPLETED_VISITS
+        data_type: NUMBER
+        description: Number of completed visits
+      - name: NO_SHOWS
+        kind: measure
+        expr: NO_SHOWS
+        data_type: NUMBER
+        description: Number of no-show appointments
+      - name: TOTAL_BILLED
+        kind: measure
+        expr: TOTAL_BILLED
+        data_type: NUMBER
+        description: Total amount billed to patient in dollars
+      - name: TOTAL_PAID
+        kind: measure
+        expr: TOTAL_PAID
+        data_type: NUMBER
+        description: Total amount paid by patient in dollars
+      - name: TOTAL_INSURANCE_COVERED
+        kind: measure
+        expr: TOTAL_INSURANCE_COVERED
+        data_type: NUMBER
+        description: Total amount covered by insurance in dollars
+      - name: TOTAL_OUTSTANDING
+        kind: measure
+        expr: TOTAL_OUTSTANDING
+        data_type: NUMBER
+        description: Outstanding balance owed in dollars
+metrics:
+  - name: patient_count
+    description: Count of distinct patients
+    expr: COUNT(DISTINCT patient_analytics.PATIENT_ID)
+    data_type: NUMBER
+  - name: total_revenue
+    description: Total revenue billed across all patients
+    expr: SUM(patient_analytics.TOTAL_BILLED)
+    data_type: NUMBER
+  - name: avg_revenue_per_patient
+    description: Average revenue per patient
+    expr: AVG(patient_analytics.TOTAL_BILLED)
+    data_type: NUMBER
+  - name: total_outstanding_balance
+    description: Sum of all outstanding balances
+    expr: SUM(patient_analytics.TOTAL_OUTSTANDING)
+    data_type: NUMBER
+  - name: no_show_rate
+    description: Percentage of appointments that were no-shows
+    expr: "SUM(patient_analytics.NO_SHOWS)::FLOAT / NULLIF(SUM(patient_analytics.TOTAL_APPOINTMENTS), 0) * 100"
+    data_type: NUMBER
+  - name: avg_visits_per_patient
+    description: Average number of visits per patient
+    expr: AVG(patient_analytics.TOTAL_APPOINTMENTS)
+    data_type: NUMBER

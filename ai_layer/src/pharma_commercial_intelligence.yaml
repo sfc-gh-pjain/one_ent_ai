@@ -1,0 +1,366 @@
+name: pharma_commercial_intelligence
+description: |
+  Commercial medicine analytics for a pharmaceutical company. Covers prescription volume
+  metrics by drug and territory, HCP specialty classification and engagement tiering,
+  and sales rep engagement attribution with drug/territory/region enrichment.
+
+tables:
+  - name: RX_METRICS
+    description: Daily prescription volume and new patient start metrics aggregated by drug and territory. Powers field force effectiveness dashboards and territory-level performance tracking.
+    base_table:
+      database: DEMO
+      schema: HEALTHCARE_DEMO
+      table: RX_METRICS_OUTPUT
+    dimensions:
+      - name: DS
+        expr: DS
+        description: Date of the metric computation (YYYY-MM-DD)
+        data_type: TEXT
+      - name: METRIC_NAME
+        expr: METRIC_NAME
+        description: Type of metric (total_rx_volume, new_patient_starts)
+        data_type: TEXT
+        sample_values:
+          - total_rx_volume
+          - new_patient_starts
+      - name: PERIOD_GRAIN
+        expr: PERIOD_GRAIN
+        description: Time granularity (Daily, Weekly, Monthly)
+        data_type: TEXT
+      - name: DRUG_ID
+        expr: DRUG_ID
+        description: Drug identifier, joins to DIM_DRUG
+        data_type: TEXT
+      - name: TERRITORY_ID
+        expr: TERRITORY_ID
+        description: Territory identifier, joins to DIM_TERRITORY
+        data_type: NUMBER
+    facts:
+      - name: METRIC_VALUE
+        expr: METRIC_VALUE
+        description: The metric value (units for rx_volume, count for new_patient_starts)
+        data_type: NUMBER
+      - name: METRIC_VALUE_NORMALIZED
+        expr: "METRIC_VALUE / NULLIF(AVG(METRIC_VALUE) OVER (PARTITION BY TERRITORY_ID), 0)"
+        description: Metric value normalized against territory average (>1 = above avg, <1 = below)
+        data_type: NUMBER
+    time_dimensions:
+      - name: ETL_TIMESTAMP
+        expr: ETL_TIMESTAMP
+        description: When the metric was last computed
+        data_type: TIMESTAMP_NTZ
+
+  - name: HCP_PROFILES
+    description: Healthcare provider profiles with standardized specialty classification and engagement tier assignments. Powers targeting lists, call planning, and segmentation analytics.
+    base_table:
+      database: DEMO
+      schema: HEALTHCARE_DEMO
+      table: HCP_TIERED_PROFILES
+    dimensions:
+      - name: HCP_ID
+        expr: HCP_ID
+        description: Unique HCP identifier
+        data_type: TEXT
+      - name: SPECIALTY
+        expr: SPECIALTY
+        description: Original specialty as reported
+        data_type: TEXT
+        sample_values:
+          - Internal Medicine
+          - Oncology
+          - Cardiology
+          - Neurology
+          - Endocrinology
+      - name: STANDARDIZED_SPECIALTY
+        expr: STANDARDIZED_SPECIALTY
+        description: Normalized specialty group (e.g., Primary Care, Oncology, Cardiovascular)
+        data_type: TEXT
+        sample_values:
+          - Primary Care
+          - Oncology
+          - Cardiovascular
+          - Neuroscience
+          - Metabolic
+          - Immunology
+      - name: SPECIALTY_GROUP_ID
+        expr: SPECIALTY_GROUP_ID
+        description: Numeric ID of the standardized specialty group
+        data_type: NUMBER
+      - name: TIER
+        expr: TIER
+        description: Engagement tier based on Rx volume + engagement frequency + experience
+        data_type: TEXT
+        sample_values:
+          - "Tier 1 - High"
+          - "Tier 2 - Medium"
+          - "Tier 3 - Low"
+          - "Tier 4 - Emerging"
+      - name: DECILE
+        expr: DECILE
+        description: Prescribing decile (1-10, higher = more volume)
+        data_type: NUMBER
+    facts:
+      - name: CONFIDENCE
+        expr: CONFIDENCE
+        description: Confidence score of the tier assignment (0.0 to 1.0)
+        data_type: NUMBER
+    time_dimensions:
+      - name: ETL_UPDATE_DATETIME_UTC
+        expr: ETL_UPDATE_DATETIME_UTC
+        description: When the classification was computed
+        data_type: TIMESTAMP_NTZ
+
+  - name: ENGAGEMENTS
+    description: Enriched HCP engagement events with drug, territory, and region attribution. Powers rep effectiveness, share of voice, and channel optimization analytics.
+    base_table:
+      database: DEMO
+      schema: HEALTHCARE_DEMO
+      table: ENGAGEMENT_FINAL
+    dimensions:
+      - name: ENGAGEMENT_ID
+        expr: ENGAGEMENT_ID
+        description: Unique engagement event identifier
+        data_type: TEXT
+      - name: HCP_ID
+        expr: HCP_ID
+        description: The HCP who was engaged
+        data_type: TEXT
+      - name: REP_ID
+        expr: REP_ID
+        description: The sales rep who conducted the engagement
+        data_type: TEXT
+      - name: DRUG_NAME
+        expr: DRUG_NAME
+        description: Name of the drug discussed/promoted
+        data_type: TEXT
+      - name: THERAPEUTIC_AREA
+        expr: THERAPEUTIC_AREA
+        description: Therapeutic area of the drug
+        data_type: TEXT
+        sample_values:
+          - Oncology
+          - Immunology
+          - Cardiology
+          - Neurology
+          - Respiratory
+      - name: TERRITORY_KEY
+        expr: TERRITORY_KEY
+        description: Surrogate key for the territory
+        data_type: TEXT
+      - name: REGION_KEY
+        expr: REGION_KEY
+        description: Surrogate key for the region
+        data_type: TEXT
+      - name: ENGAGEMENT_TYPE
+        expr: ENGAGEMENT_TYPE
+        description: Type of engagement activity
+        data_type: TEXT
+        sample_values:
+          - Detail Visit
+          - Sample Drop
+          - Lunch & Learn
+          - Conference
+          - Webinar
+      - name: CHANNEL
+        expr: CHANNEL
+        description: Communication channel used
+        data_type: TEXT
+        sample_values:
+          - In-Person
+          - Virtual
+          - Hybrid
+          - Phone
+          - Email
+    facts:
+      - name: DURATION_MINUTES
+        expr: DURATION_MINUTES
+        description: Duration of the engagement in minutes
+        data_type: NUMBER
+      - name: SAMPLES_DROPPED
+        expr: SAMPLES_DROPPED
+        description: Number of drug samples provided
+        data_type: NUMBER
+      - name: ENGAGEMENT_EFFECTIVENESS
+        expr: "(DURATION_MINUTES * 0.4) + (SAMPLES_DROPPED * 10 * 0.3) + (CASE WHEN CHANNEL = 'In-Person' THEN 30 WHEN CHANNEL = 'Virtual' THEN 20 ELSE 10 END * 0.3)"
+        description: Composite effectiveness score combining duration weight (40%), sample impact (30%), and channel value (30%). Higher = more effective engagement.
+        data_type: NUMBER
+    time_dimensions:
+      - name: ENGAGEMENT_DATE
+        expr: ENGAGEMENT_DATE
+        description: Date of the engagement
+        data_type: DATE
+
+  - name: DRUGS
+    description: Drug/product dimension with therapeutic area, indication, and revenue classification.
+    base_table:
+      database: DEMO
+      schema: HEALTHCARE_DEMO
+      table: DIM_DRUG
+    primary_key:
+      columns:
+        - DRUG_ID
+    dimensions:
+      - name: DRUG_ID
+        expr: DRUG_ID
+        description: Drug unique identifier
+        data_type: TEXT
+      - name: DRUG_NAME
+        expr: DRUG_NAME
+        description: Brand name of the drug
+        data_type: TEXT
+      - name: GENERIC_NAME
+        expr: GENERIC_NAME
+        description: Generic/chemical name
+        data_type: TEXT
+      - name: THERAPEUTIC_AREA
+        expr: THERAPEUTIC_AREA
+        description: Therapeutic area classification
+        data_type: TEXT
+      - name: INDICATION
+        expr: INDICATION
+        description: Primary approved indication
+        data_type: TEXT
+      - name: DOSAGE_FORM
+        expr: DOSAGE_FORM
+        description: Form factor (Tablet, Injection, IV Infusion, Inhaler)
+        data_type: TEXT
+      - name: IS_SPECIALTY
+        expr: IS_SPECIALTY
+        description: Whether this is a specialty drug (typically injectable/infusion)
+        data_type: BOOLEAN
+    facts:
+      - name: ANNUAL_REVENUE_MM
+        expr: ANNUAL_REVENUE_MM
+        description: Annual revenue in millions USD
+        data_type: NUMBER
+    time_dimensions:
+      - name: LAUNCH_DATE
+        expr: LAUNCH_DATE
+        description: Market launch date
+        data_type: DATE
+
+  - name: TERRITORIES
+    description: Sales territory dimension with district and region hierarchy.
+    base_table:
+      database: DEMO
+      schema: HEALTHCARE_DEMO
+      table: DIM_TERRITORY
+    primary_key:
+      columns:
+        - TERRITORY_ID
+    dimensions:
+      - name: TERRITORY_ID
+        expr: TERRITORY_ID
+        description: Territory unique identifier
+        data_type: NUMBER
+      - name: TERRITORY_NAME
+        expr: TERRITORY_NAME
+        description: Territory name
+        data_type: TEXT
+      - name: TERRITORY_KEY
+        expr: TERRITORY_KEY
+        description: Surrogate key for joining to fact tables
+        data_type: TEXT
+      - name: DISTRICT_NAME
+        expr: DISTRICT_NAME
+        description: District the territory belongs to
+        data_type: TEXT
+      - name: REGION_ID
+        expr: REGION_ID
+        description: Region identifier for rollup
+        data_type: NUMBER
+
+  - name: REGIONS
+    description: Geographic region dimension for regional analytics rollups.
+    base_table:
+      database: DEMO
+      schema: HEALTHCARE_DEMO
+      table: DIM_REGION
+    primary_key:
+      columns:
+        - REGION_ID
+    dimensions:
+      - name: REGION_ID
+        expr: REGION_ID
+        description: Region unique identifier
+        data_type: NUMBER
+      - name: REGION_NAME
+        expr: REGION_NAME
+        description: Region name (Northeast, West, Europe-West, etc.)
+        data_type: TEXT
+      - name: REGION_KEY
+        expr: REGION_KEY
+        description: Surrogate key for joining
+        data_type: TEXT
+      - name: COUNTRY
+        expr: COUNTRY
+        description: Country code
+        data_type: TEXT
+
+relationships:
+  - name: rx_metrics_to_drugs
+    left_table: RX_METRICS
+    right_table: DRUGS
+    join_type: left_outer
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: DRUG_ID
+        right_column: DRUG_ID
+  - name: rx_metrics_to_territories
+    left_table: RX_METRICS
+    right_table: TERRITORIES
+    join_type: left_outer
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: TERRITORY_ID
+        right_column: TERRITORY_ID
+  - name: territories_to_regions
+    left_table: TERRITORIES
+    right_table: REGIONS
+    join_type: left_outer
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: REGION_ID
+        right_column: REGION_ID
+
+verified_queries:
+  - name: rx_volume_by_drug
+    question: What is the total prescription volume by drug?
+    sql: |
+      SELECT d.DRUG_NAME, d.THERAPEUTIC_AREA, SUM(m.METRIC_VALUE) AS total_volume
+      FROM DEMO.HEALTHCARE_DEMO.RX_METRICS_OUTPUT m
+      LEFT JOIN DEMO.HEALTHCARE_DEMO.DIM_DRUG d ON m.DRUG_ID = d.DRUG_ID
+      WHERE m.METRIC_NAME = 'total_rx_volume'
+      GROUP BY d.DRUG_NAME, d.THERAPEUTIC_AREA
+      ORDER BY total_volume DESC
+  - name: new_patient_starts_by_territory
+    question: Which territories have the most new patient starts?
+    sql: |
+      SELECT t.TERRITORY_NAME, t.DISTRICT_NAME, SUM(m.METRIC_VALUE) AS new_patients
+      FROM DEMO.HEALTHCARE_DEMO.RX_METRICS_OUTPUT m
+      LEFT JOIN DEMO.HEALTHCARE_DEMO.DIM_TERRITORY t ON m.TERRITORY_ID = t.TERRITORY_ID
+      WHERE m.METRIC_NAME = 'new_patient_starts'
+      GROUP BY t.TERRITORY_NAME, t.DISTRICT_NAME
+      ORDER BY new_patients DESC
+      LIMIT 15
+  - name: hcp_tier_distribution
+    question: How are HCPs distributed across tiers?
+    sql: |
+      SELECT TIER, STANDARDIZED_SPECIALTY, COUNT(*) AS hcp_count
+      FROM DEMO.HEALTHCARE_DEMO.HCP_TIERED_PROFILES
+      GROUP BY TIER, STANDARDIZED_SPECIALTY
+      ORDER BY hcp_count DESC
+  - name: engagement_by_channel
+    question: What is the engagement volume by channel and type?
+    sql: |
+      SELECT CHANNEL, ENGAGEMENT_TYPE, COUNT(*) AS engagement_count,
+             AVG(DURATION_MINUTES) AS avg_duration
+      FROM DEMO.HEALTHCARE_DEMO.ENGAGEMENT_FINAL
+      GROUP BY CHANNEL, ENGAGEMENT_TYPE
+      ORDER BY engagement_count DESC
+  - name: top_drugs_by_revenue
+    question: What are the top drugs by annual revenue?
+    sql: |
+      SELECT DRUG_NAME, THERAPEUTIC_AREA, INDICATION, ANNUAL_REVENUE_MM
+      FROM DEMO.HEALTHCARE_DEMO.DIM_DRUG
+      ORDER BY ANNUAL_REVENUE_MM DESC

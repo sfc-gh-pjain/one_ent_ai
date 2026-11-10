@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="snowflake-source" content="cortex-agent-authored" />
+  <title>AI Demo Usage Guide — Prompts and Walkthroughs</title>
+  <style>
+    :root {
+      --snow-blue: #29B5E8;
+      --snow-dark: #11567F;
+      --snow-navy: #0D2B45;
+      --snow-teal: #1ECAD3;
+      --snow-light-blue: #E8F7FC;
+      --snow-ice: #F4FBFE;
+      --text: #1B2B3A;
+      --text-muted: #5A7184;
+      --success: #0DBF73;
+      --success-light: #E6F9F1;
+      --purple: #7C3AED;
+      --purple-light: #EDE9FE;
+      --warning: #F5A623;
+      --warning-light: #FEF5E6;
+      --danger: #E54B4B;
+      --border: #E3EBF0;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      color: var(--text);
+      line-height: 1.7;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 100vh;
+    }
+    nav {
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+      background: var(--snow-navy); padding: 24px 0;
+    }
+    nav .title { color: var(--snow-blue); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 0 16px; margin-bottom: 20px; }
+    nav a { display: block; padding: 7px 16px; color: rgba(255,255,255,0.65); text-decoration: none; font-size: 12px; font-weight: 500; border-left: 3px solid transparent; transition: 0.2s; }
+    nav a:hover { color: #fff; background: rgba(41,181,232,0.1); border-left-color: var(--snow-blue); }
+    main { padding: 40px 56px; max-width: 900px; }
+    h1 { font-size: 32px; font-weight: 800; color: var(--snow-navy); margin-bottom: 8px; }
+    h2 { font-size: 22px; font-weight: 700; color: var(--snow-navy); margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--border); }
+    h3 { font-size: 16px; font-weight: 600; color: var(--snow-dark); margin: 20px 0 8px; }
+    p { margin: 8px 0; font-size: 14px; }
+    .subtitle { font-size: 15px; color: var(--text-muted); margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+    th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--snow-ice); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--snow-dark); }
+    code { background: var(--snow-navy); color: var(--snow-blue); padding: 2px 6px; border-radius: 4px; font-size: 12px; font-family: 'SF Mono', monospace; }
+    .code-block { background: var(--snow-navy); color: #E8F7FC; padding: 14px 18px; border-radius: var(--radius); font-family: 'SF Mono', monospace; font-size: 12px; margin: 12px 0; overflow-x: auto; line-height: 1.5; white-space: pre; }
+    .prompt-box { background: var(--snow-light-blue); border-left: 4px solid var(--snow-blue); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; margin: 10px 0; font-size: 14px; }
+    .prompt-box::before { content: 'PROMPT'; display: block; font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--snow-dark); margin-bottom: 4px; }
+    .tip { background: var(--success-light); border-left: 4px solid var(--success); padding: 10px 14px; border-radius: 0 var(--radius) var(--radius) 0; margin: 10px 0; font-size: 13px; }
+    .tip::before { content: 'TIP'; display: block; font-size: 9px; font-weight: 700; letter-spacing: 1px; color: #0A7B4E; margin-bottom: 4px; }
+    .warning { background: var(--warning-light); border-left: 4px solid var(--warning); padding: 10px 14px; border-radius: 0 var(--radius) var(--radius) 0; margin: 10px 0; font-size: 13px; }
+    .warning::before { content: 'AVOID'; display: block; font-size: 9px; font-weight: 700; letter-spacing: 1px; color: #92400E; margin-bottom: 4px; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+    .badge-blue { background: var(--snow-light-blue); color: var(--snow-dark); }
+    .badge-purple { background: var(--purple-light); color: var(--purple); }
+    .badge-green { background: var(--success-light); color: #0A7B4E; }
+    .badge-teal { background: #E0F7FA; color: #00695C; }
+    ul, ol { padding-left: 20px; margin: 8px 0; }
+    li { padding: 3px 0; font-size: 14px; }
+    .section { margin-bottom: 48px; }
+    @media print { body { display: block; } nav { display: none; } main { max-width: 100%; padding: 20px; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="title">Demo Prompts</div>
+  <a href="#quick">Quick Access</a>
+  <a href="#pharma-app">Pharma Intelligence App</a>
+  <a href="#story-dashboard">Demo Story Dashboard</a>
+  <a href="#enterprise-agent">Enterprise Agent</a>
+  <a href="#direct-analyst">Cortex Analyst (Direct)</a>
+  <a href="#tips">Live Demo Tips</a>
+  <a href="#backup">Backup SQL</a>
+  <a href="../Snowflake_Semantic_n_Context_Layer_Architecture.html" style="margin-top:16px;color:var(--snow-teal);border-left-color:var(--snow-teal)">Architecture Reference</a>
+</nav>
+
+<main>
+
+<h1>AI Demo Usage Guide</h1>
+<p class="subtitle">Ready-to-use prompts for demoing Streamlit apps, Cortex Analyst, Search, and Enterprise Agent | <a href="../Snowflake_Semantic_n_Context_Layer_Architecture.html" style="color:var(--snow-blue)">Architecture Reference</a></p>
+
+<!-- QUICK ACCESS -->
+<section class="section" id="quick">
+  <h2>Quick Access</h2>
+  <table>
+    <thead><tr><th>Resource</th><th>Location</th></tr></thead>
+    <tbody>
+      <tr><td>Pharma Intelligence App</td><td>Snowsight > Streamlit > <code>PHARMA_INTELLIGENCE_APP</code></td></tr>
+      <tr><td>Demo Story Dashboard</td><td>Snowsight > Streamlit > <code>DEMO_STORY_DASHBOARD</code></td></tr>
+      <tr><td>Enterprise Agent</td><td>Snowsight > Cortex Agents > <code>ENTERPRISE_INTELLIGENCE_AGENT</code></td></tr>
+      <tr><td>Architecture Reference</td><td><a href="../Snowflake_Semantic_n_Context_Layer_Architecture.html">Snowflake Semantic &amp; Context Layer Architecture</a> (4-layer diagram, component mapping, governance)</td></tr>
+      <tr><td>Pharma Agent</td><td>Snowsight > Cortex Agents > <code>PHARMA_INTELLIGENCE_AGENT</code></td></tr>
+    </tbody>
+  </table>
+  <p><strong>Semantic Views:</strong></p>
+  <ul>
+    <li><code>DEMO.HEALTHCARE_DEMO.PHARMA_COMMERCIAL_INTELLIGENCE</code></li>
+    <li><code>DEMO.CRM_DEMO.CRM_COMMERCIAL_INTELLIGENCE</code></li>
+    <li><code>DEMO.HEALTHCARE_DEMO.FINANCE_SUMMARY</code></li>
+  </ul>
+</section>
+
+<!-- PHARMA INTELLIGENCE APP -->
+<section class="section" id="pharma-app">
+  <h2>Pharma Intelligence App <span class="badge badge-blue">4 Tabs</span></h2>
+
+  <h3>Tab 1: Analyst (Text-to-SQL)</h3>
+  <p>Semantic View: <code>PHARMA_COMMERCIAL_INTELLIGENCE</code></p>
+  <table>
+    <thead><tr><th>Prompt</th><th>Demonstrates</th></tr></thead>
+    <tbody>
+      <tr><td>"What is the total prescription volume by drug?"</td><td>Aggregation + JOIN (RX_METRICS + DIM_DRUG)</td></tr>
+      <tr><td>"Which territories have the most new patient starts?"</td><td>Filter by METRIC_NAME + territory join</td></tr>
+      <tr><td>"Show me HCP tier distribution by specialty"</td><td>Multi-dimension grouping</td></tr>
+      <tr><td>"What are the top 5 drugs by annual revenue?"</td><td>Sort on dimension table</td></tr>
+      <tr><td>"Average engagement duration by channel?"</td><td>Aggregation on ENGAGEMENTS</td></tr>
+    </tbody>
+  </table>
+  <div class="tip">Good follow-up: "Now show me only oncology drugs" — demonstrates conversational refinement.</div>
+
+  <h3>Tab 2: HCP and Drug Search</h3>
+  <p>Service: <code>PHARMA_SEARCH_SERVICE</code> (10K HCP profiles indexed)</p>
+  <table>
+    <thead><tr><th>Prompt</th><th>Demonstrates</th></tr></thead>
+    <tbody>
+      <tr><td>"Cardiology specialists in the Northeast"</td><td>Semantic search by specialty + region</td></tr>
+      <tr><td>"Top tier oncologists"</td><td>Natural language tier filtering</td></tr>
+      <tr><td>"Neurologists with high engagement"</td><td>Concept-level (not exact column match)</td></tr>
+      <tr><td>"Primary care providers in Western territory"</td><td>Standardized specialty matching</td></tr>
+      <tr><td>"Immunology HCPs Tier 1"</td><td>Direct attribute matching</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tab 3: AI Enrichment</h3>
+  <p>No prompts needed. Shows pre-computed <code>AI_CLASSIFY</code> and <code>AI_SENTIMENT</code> results. Point out:</p>
+  <ul>
+    <li>Therapeutic area classification (AI-assigned vs original)</li>
+    <li>Engagement sentiment scores at scale (80K records)</li>
+  </ul>
+
+  <h3>Tab 4: Agent</h3>
+  <p>Provides links to the published agents in Snowsight CoWork. Test via Preview tab.</p>
+  <p>Model: <code>claude-haiku-4-5</code> | Tools: <code>pharma_analyst</code> + <code>hcp_search</code></p>
+  <table>
+    <thead><tr><th>Prompt</th><th>Demonstrates</th></tr></thead>
+    <tbody>
+      <tr><td>"What are the top 5 drugs by total prescription volume?"</td><td>Analyst tool calling semantic view</td></tr>
+      <tr><td>"Find me top tier oncologists in the Northeast"</td><td>Search tool over HCP profiles</td></tr>
+      <tr><td>"What is engagement effectiveness for top-tier HCPs?"</td><td>Derived fact ENGAGEMENT_EFFECTIVENESS</td></tr>
+      <tr><td>"Show HCP tier distribution by specialty"</td><td>Routes to Analyst</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- DEMO STORY DASHBOARD -->
+<section class="section" id="story-dashboard">
+  <h2>Demo Story Dashboard <span class="badge badge-green">6 Tabs</span></h2>
+  <table>
+    <thead><tr><th>Tab</th><th>Shows</th><th>Key Callout</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Overview</strong></td><td>Platform-wide metrics, table counts, pipeline status</td><td>"150K+ records across 4 domains, one platform"</td></tr>
+      <tr><td><strong>Healthcare</strong></td><td>Rx volume by drug, HCP tiers, engagement heatmap</td><td>"Output of PySpark Code Bundles on warehouse compute"</td></tr>
+      <tr><td><strong>CRM</strong></td><td>Health scores, pipeline forecast, at-risk accounts</td><td>"Tableau queries this directly — no Salesforce round-trip"</td></tr>
+      <tr><td><strong>Data Quality</strong></td><td>DMF results, violation counts, golden record stats</td><td>"Fires automatically via streams. AI suggests new rules."</td></tr>
+      <tr><td><strong>Enterprise AI</strong></td><td>Semantic registry, agent routing demo</td><td>"One agent spans 9 domains. Adding a domain = one SV + one row"</td></tr>
+      <tr><td><strong>Governance</strong></td><td>Tag coverage, compliance mapping, source provenance</td><td>"Same governance regardless of source system"</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ENTERPRISE AGENT -->
+<section class="section" id="enterprise-agent">
+  <h2>Enterprise Agent <span class="badge badge-teal">Cross-Domain</span></h2>
+  <p>Object: <code>DEMO.HEALTHCARE_DEMO.ENTERPRISE_INTELLIGENCE_AGENT</code></p>
+  <p>Access: Snowsight > Cortex Agents > ENTERPRISE_INTELLIGENCE_AGENT > Preview tab</p>
+  <p>Model: <code>claude-haiku-4-5</code> | Tools: <code>pharma_analyst</code>, <code>crm_analyst</code>, <code>finance_analyst</code>, <code>hcp_search</code></p>
+
+  <h3>Cross-Domain Routing Prompts</h3>
+  <table>
+    <thead><tr><th>Prompt</th><th>Routes To</th><th>Key Point</th></tr></thead>
+    <tbody>
+      <tr><td>"What are the top 5 drugs by total prescription volume?"</td><td><span class="badge badge-blue">pharma_analyst</span></td><td>Routes to pharma semantic view</td></tr>
+      <tr><td>"What is the pipeline conversion rate by stage?"</td><td><span class="badge badge-purple">crm_analyst</span></td><td>Routes to CRM domain</td></tr>
+      <tr><td>"What is the revenue forecast variance?"</td><td><span class="badge badge-green">finance_analyst</span></td><td>Routes to finance domain</td></tr>
+      <tr><td>"Find me Tier 1 oncologists in the Northeast"</td><td><span class="badge badge-teal">hcp_search</span></td><td>Cortex Search over HCP profiles</td></tr>
+      <tr><td>"Which sales reps have the highest win rates?"</td><td><span class="badge badge-purple">crm_analyst</span></td><td>CRM pipeline analytics</td></tr>
+      <tr><td>"Show me cost center budget utilization"</td><td><span class="badge badge-green">finance_analyst</span></td><td>BURN_RATE_PCT derived fact</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Power Demo Sequence (4 tools, 1 conversation)</h3>
+  <div class="prompt-box">1. "What are the top 5 drugs by prescription volume?" (pharma_analyst)<br><br>2. "Now show me pipeline conversion rates" (crm_analyst)<br><br>3. "What about budget variance by product line?" (finance_analyst)<br><br>4. "Find me top tier oncologists" (hcp_search)</div>
+  <div class="tip">Each response routes to a different tool — demonstrating seamless cross-domain intelligence from one agent.</div>
+</section>
+
+<!-- DIRECT ANALYST -->
+<section class="section" id="direct-analyst">
+  <h2>Cortex Analyst (Direct)</h2>
+  <p>Test semantic views directly in Snowsight (AI & ML > Cortex Analyst) or via REST API:</p>
+
+  <h3>Semantic Views Available</h3>
+  <table>
+    <thead><tr><th>Semantic View</th><th>Domain</th><th>Example Question</th></tr></thead>
+    <tbody>
+      <tr><td><code>DEMO.HEALTHCARE_DEMO.PHARMA_COMMERCIAL_INTELLIGENCE</code></td><td>Pharma</td><td>"Total Rx volume by therapeutic area"</td></tr>
+      <tr><td><code>DEMO.CRM_DEMO.CRM_COMMERCIAL_INTELLIGENCE</code></td><td>CRM</td><td>"Forecast breakdown by category"</td></tr>
+      <tr><td><code>DEMO.HEALTHCARE_DEMO.FINANCE_SUMMARY</code></td><td>Finance</td><td>"Budget variance by cost center"</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Test via REST API</h3>
+  <div class="code-block">curl -s -N -X POST "https://<ACCOUNT_LOCATOR>.snowflakecomputing.com/api/v2/databases/DEMO/schemas/HEALTHCARE_DEMO/agents/PHARMA_INTELLIGENCE_AGENT:run" \
+  -H "Authorization: Bearer $SNOWFLAKE_PAT" \
+  -H "Content-Type: application/json" \
+  -H "X-Snowflake-Authorization-Token-Type: PROGRAMMATIC_ACCESS_TOKEN" \
+  -d '{"messages": [{"role": "user", "content": [{"type": "text", "text": "Top 5 drugs by Rx volume"}]}]}'</div>
+  <div class="tip">Use the object-based endpoint (not /api/v2/cortex/agent:run which is the lite/objectless endpoint).</div>
+</section>
+
+<!-- TIPS -->
+<section class="section" id="tips">
+  <h2>Live Demo Tips</h2>
+
+  <h3>Good Prompt Patterns</h3>
+  <ul>
+    <li>"What is [metric] by [dimension]?" — always works</li>
+    <li>"Which [entities] have the highest/lowest [metric]?"</li>
+    <li>"Show me [metric] for [filter condition]"</li>
+    <li>"Compare [metric] across [dimension values]"</li>
+  </ul>
+
+  <div class="warning">
+    <strong>Vague:</strong> "Tell me about the data" (no specific metric)<br>
+    <strong>Too complex:</strong> "Rx volume for HCPs engaged in oncology drugs in the Northeast" (too many joins)<br>
+    <strong>Missing context:</strong> "Show me the trend" (no time dimension available)
+  </div>
+
+  <h3>Recovery Phrases</h3>
+  <ul>
+    <li>"Let me rephrase — what I mean is [simpler version]"</li>
+    <li>"Let me try a more specific question..."</li>
+    <li>If wrong domain: "I meant this for the [Healthcare/CRM/Finance] domain"</li>
+  </ul>
+
+  <h3>Pre-Demo Checklist</h3>
+  <ul>
+    <li>Verify Streamlit apps load (bust cache: <code>ALTER STREAMLIT ... SET COMMENT</code>)</li>
+    <li>Test one prompt per tab before audience arrives</li>
+    <li>Have Enterprise Agent Preview tab open in a separate Snowsight tab</li>
+    <li>Keep <code>SHOW SEMANTIC VIEWS IN DATABASE DEMO</code> ready for governance angle</li>
+    <li>Confirm search service is ACTIVE: <code>SHOW CORTEX SEARCH SERVICES IN SCHEMA DEMO.HEALTHCARE_DEMO</code></li>
+    <li>Have backup SQL worksheet open</li>
+  </ul>
+</section>
+
+<!-- BACKUP SQL -->
+<section class="section" id="backup">
+  <h2>Backup SQL Queries</h2>
+  <p>If AI features are slow during live demo, run these directly:</p>
+  <div class="code-block">-- Top drugs by Rx volume
+SELECT d.DRUG_NAME, d.THERAPEUTIC_AREA, SUM(m.METRIC_VALUE) AS total_volume
+FROM DEMO.HEALTHCARE_DEMO.RX_METRICS_OUTPUT m
+JOIN DEMO.HEALTHCARE_DEMO.DIM_DRUG d ON m.DRUG_ID = d.DRUG_ID
+WHERE m.METRIC_NAME = 'total_rx_volume'
+GROUP BY d.DRUG_NAME, d.THERAPEUTIC_AREA
+ORDER BY total_volume DESC;
+
+-- At-risk accounts with exposure
+SELECT ACCOUNT_NAME, INDUSTRY, REGION, HEALTH_SCORE,
+       TOTAL_PIPELINE + WON_REVENUE AS REVENUE_EXPOSURE
+FROM DEMO.CRM_DEMO.CUSTOMER_360
+WHERE SEGMENT = 'At Risk'
+ORDER BY REVENUE_EXPOSURE DESC;
+
+-- Budget variance by product line
+SELECT PRODUCT_LINE, REGION,
+       SUM(ACTUAL_REVENUE) - SUM(BUDGET_REVENUE) AS variance
+FROM DEMO.HEALTHCARE_DEMO.FINANCE_REVENUE_SUMMARY
+GROUP BY PRODUCT_LINE, REGION
+ORDER BY variance DESC;
+
+-- HCP tier distribution
+SELECT TIER, COUNT(*) AS hcp_count
+FROM DEMO.HEALTHCARE_DEMO.HCP_TIERED_PROFILES
+GROUP BY TIER ORDER BY hcp_count DESC;</div>
+</section>
+
+</main>
+</body>
+</html>

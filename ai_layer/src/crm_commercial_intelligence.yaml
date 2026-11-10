@@ -1,0 +1,268 @@
+name: crm_commercial_intelligence
+description: |
+  CRM analytics for Salesforce one-hop-reduction pattern. Covers customer health scoring,
+  pipeline forecasting, opportunity management, and account segmentation. Demonstrates
+  multi-step derived facts (health_score composite, expansion potential, revenue at risk).
+
+tables:
+  - name: CUSTOMER_360
+    description: Unified customer view with health scores, win rates, and segmentation. Powers account-level dashboards and at-risk identification.
+    base_table:
+      database: DEMO
+      schema: CRM_DEMO
+      table: CUSTOMER_360
+    primary_key:
+      columns:
+        - ACCOUNT_ID
+    dimensions:
+      - name: ACCOUNT_ID
+        expr: ACCOUNT_ID
+        description: Unique account identifier
+        data_type: TEXT
+      - name: ACCOUNT_NAME
+        expr: ACCOUNT_NAME
+        description: Company name
+        data_type: TEXT
+      - name: INDUSTRY
+        expr: INDUSTRY
+        description: Industry vertical
+        data_type: TEXT
+        sample_values:
+          - Technology
+          - Healthcare
+          - Financial Services
+          - Manufacturing
+          - Retail
+      - name: REGION
+        expr: REGION
+        description: Geographic region
+        data_type: TEXT
+        sample_values:
+          - West
+          - East
+          - Central
+          - EMEA
+          - APAC
+      - name: SEGMENT
+        expr: SEGMENT
+        description: Account segment based on composite health score
+        data_type: TEXT
+        sample_values:
+          - High Value
+          - Growth
+          - At Risk
+    facts:
+      - name: TOTAL_PIPELINE
+        expr: TOTAL_PIPELINE
+        description: Sum of open opportunity amounts
+        data_type: NUMBER
+      - name: WON_REVENUE
+        expr: WON_REVENUE
+        description: Sum of closed-won opportunity amounts
+        data_type: NUMBER
+      - name: WIN_RATE
+        expr: WIN_RATE
+        description: Ratio of closed-won to total opportunities (0.0 to 1.0)
+        data_type: NUMBER
+      - name: OPEN_OPPS
+        expr: OPEN_OPPS
+        description: Count of open opportunities
+        data_type: NUMBER
+      - name: AVG_CASE_RESOLUTION_DAYS
+        expr: AVG_CASE_RESOLUTION_DAYS
+        description: Average days to resolve support cases
+        data_type: NUMBER
+      - name: OPEN_CASES
+        expr: OPEN_CASES
+        description: Count of unresolved support cases
+        data_type: NUMBER
+      - name: HEALTH_SCORE
+        expr: HEALTH_SCORE
+        description: "Composite score: (win_rate * 40) + (min(pipeline/500K, 1) * 30) + (max(1 - avg_resolution/30, 0) * 30). Range 0-100."
+        data_type: NUMBER
+      - name: REVENUE_AT_RISK
+        expr: "CASE WHEN SEGMENT = 'At Risk' THEN TOTAL_PIPELINE + WON_REVENUE ELSE 0 END"
+        description: Total revenue exposure (pipeline + won) for at-risk accounts only. Zero for healthy accounts.
+        data_type: NUMBER
+      - name: EXPANSION_POTENTIAL
+        expr: "TOTAL_PIPELINE * WIN_RATE * (1.0 + (HEALTH_SCORE / 100.0))"
+        description: Weighted expansion opportunity accounting for win probability and account health. Higher health amplifies potential.
+        data_type: NUMBER
+      - name: CASE_BURDEN_RATIO
+        expr: "OPEN_CASES::FLOAT / NULLIF(OPEN_OPPS, 0)"
+        description: Support cases per open opportunity. High ratio signals account friction.
+        data_type: NUMBER
+    time_dimensions:
+      - name: ETL_TIMESTAMP
+        expr: ETL_TIMESTAMP
+        description: When the enrichment was last computed
+        data_type: TIMESTAMP_NTZ
+
+  - name: PIPELINE_FORECAST
+    description: Open opportunity pipeline with weighted values, forecast categories, and velocity scoring. Powers pipeline review dashboards and forecast accuracy tracking.
+    base_table:
+      database: DEMO
+      schema: CRM_DEMO
+      table: PIPELINE_FORECAST
+    dimensions:
+      - name: OPP_ID
+        expr: OPP_ID
+        description: Unique opportunity identifier
+        data_type: TEXT
+      - name: ACCOUNT_ID
+        expr: ACCOUNT_ID
+        description: Account this opportunity belongs to
+        data_type: TEXT
+      - name: ACCOUNT_NAME
+        expr: ACCOUNT_NAME
+        description: Account company name
+        data_type: TEXT
+      - name: REGION
+        expr: REGION
+        description: Geographic region of the account
+        data_type: TEXT
+      - name: INDUSTRY
+        expr: INDUSTRY
+        description: Industry of the account
+        data_type: TEXT
+      - name: STAGE
+        expr: STAGE
+        description: Current opportunity stage
+        data_type: TEXT
+        sample_values:
+          - Prospecting
+          - Qualification
+          - Proposal
+          - Negotiation
+      - name: FORECAST_CATEGORY
+        expr: FORECAST_CATEGORY
+        description: Forecast bucket based on stage
+        data_type: TEXT
+        sample_values:
+          - Commit
+          - Best Case
+          - Pipeline
+    facts:
+      - name: AMOUNT
+        expr: AMOUNT
+        description: Opportunity deal value
+        data_type: NUMBER
+      - name: WEIGHTED_PIPELINE
+        expr: WEIGHTED_PIPELINE
+        description: "Amount * stage probability (Prospecting=10%, Qualification=25%, Proposal=50%, Negotiation=75%)"
+        data_type: NUMBER
+      - name: DAYS_TO_CLOSE
+        expr: DAYS_TO_CLOSE
+        description: Days until expected close date (negative = overdue)
+        data_type: NUMBER
+      - name: VELOCITY_SCORE
+        expr: VELOCITY_SCORE
+        description: Deal velocity (0-100, higher = faster progression to close)
+        data_type: NUMBER
+      - name: DEAL_QUALITY_INDEX
+        expr: "WEIGHTED_PIPELINE / NULLIF(GREATEST(DAYS_TO_CLOSE, 1), 0)"
+        description: Weighted pipeline per day remaining — higher means more value concentrated in deals closing soon
+        data_type: NUMBER
+    time_dimensions:
+      - name: ETL_TIMESTAMP
+        expr: ETL_TIMESTAMP
+        description: When the forecast was computed
+        data_type: TIMESTAMP_NTZ
+
+  - name: ACCOUNTS
+    description: Raw account dimension for joining with pipeline and customer data.
+    base_table:
+      database: DEMO
+      schema: CRM_DEMO
+      table: RAW_ACCOUNTS
+    primary_key:
+      columns:
+        - ACCOUNT_ID
+    dimensions:
+      - name: ACCOUNT_ID
+        expr: ACCOUNT_ID
+        description: Unique account identifier
+        data_type: TEXT
+      - name: ACCOUNT_NAME
+        expr: ACCOUNT_NAME
+        description: Company name
+        data_type: TEXT
+      - name: INDUSTRY
+        expr: INDUSTRY
+        description: Industry vertical
+        data_type: TEXT
+      - name: REGION
+        expr: REGION
+        description: Geographic region
+        data_type: TEXT
+    facts:
+      - name: EMPLOYEE_COUNT
+        expr: EMPLOYEE_COUNT
+        description: Number of employees
+        data_type: NUMBER
+      - name: ANNUAL_REVENUE
+        expr: ANNUAL_REVENUE
+        description: Annual revenue in millions
+        data_type: NUMBER
+    time_dimensions:
+      - name: CREATED_DATE
+        expr: CREATED_DATE
+        description: Account creation date in Salesforce
+        data_type: DATE
+
+relationships:
+  - name: customer360_to_accounts
+    left_table: CUSTOMER_360
+    right_table: ACCOUNTS
+    join_type: left_outer
+    relationship_type: one_to_one
+    relationship_columns:
+      - left_column: ACCOUNT_ID
+        right_column: ACCOUNT_ID
+  - name: pipeline_to_accounts
+    left_table: PIPELINE_FORECAST
+    right_table: ACCOUNTS
+    join_type: left_outer
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: ACCOUNT_ID
+        right_column: ACCOUNT_ID
+
+verified_queries:
+  - name: at_risk_accounts
+    question: Which accounts are at risk and what is their revenue exposure?
+    sql: |
+      SELECT ACCOUNT_NAME, INDUSTRY, REGION, HEALTH_SCORE, SEGMENT,
+             TOTAL_PIPELINE + WON_REVENUE AS TOTAL_REVENUE_EXPOSURE
+      FROM DEMO.CRM_DEMO.CUSTOMER_360
+      WHERE SEGMENT = 'At Risk'
+      ORDER BY TOTAL_PIPELINE + WON_REVENUE DESC
+  - name: pipeline_by_region
+    question: What is the weighted pipeline by region?
+    sql: |
+      SELECT REGION, COUNT(*) AS deal_count,
+             SUM(AMOUNT) AS total_pipeline,
+             SUM(WEIGHTED_PIPELINE) AS weighted_pipeline
+      FROM DEMO.CRM_DEMO.PIPELINE_FORECAST
+      GROUP BY REGION
+      ORDER BY weighted_pipeline DESC
+  - name: forecast_summary
+    question: What is the forecast breakdown by category?
+    sql: |
+      SELECT FORECAST_CATEGORY,
+             COUNT(*) AS deals,
+             SUM(AMOUNT) AS total_amount,
+             SUM(WEIGHTED_PIPELINE) AS weighted_amount,
+             AVG(VELOCITY_SCORE) AS avg_velocity
+      FROM DEMO.CRM_DEMO.PIPELINE_FORECAST
+      GROUP BY FORECAST_CATEGORY
+      ORDER BY weighted_amount DESC
+  - name: expansion_potential_by_industry
+    question: Which industries have the most expansion potential?
+    sql: |
+      SELECT INDUSTRY, COUNT(*) AS accounts,
+             SUM(TOTAL_PIPELINE * WIN_RATE * (1.0 + (HEALTH_SCORE / 100.0))) AS expansion_potential,
+             AVG(HEALTH_SCORE) AS avg_health
+      FROM DEMO.CRM_DEMO.CUSTOMER_360
+      GROUP BY INDUSTRY
+      ORDER BY expansion_potential DESC

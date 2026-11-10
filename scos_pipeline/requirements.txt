@@ -1,0 +1,2 @@
+apache-airflow>=2.10
+requests>=2.31

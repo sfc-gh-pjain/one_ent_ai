@@ -1,0 +1,219 @@
+name: Healthcare Pipeline Metadata
+description: >-
+  Provides insights into pipeline execution health, data freshness, quality
+  status, and lineage across bronze, silver, and gold medallion layers.
+tables:
+  - name: pipeline_log
+    base_table:
+      database: HORIZON_DEMO_DB
+      schema: HEALTHCARE
+      table: PIPELINE_EXECUTION_LOG
+    primary_key:
+      columns:
+        - EXECUTION_ID
+    columns:
+      - name: EXECUTION_ID
+        kind: dimension
+        expr: EXECUTION_ID
+        data_type: VARCHAR
+        description: Unique identifier for each pipeline run
+      - name: PIPELINE_NAME
+        kind: dimension
+        expr: PIPELINE_NAME
+        data_type: VARCHAR
+        description: Name of the pipeline (e.g., bronze_to_silver_patients)
+      - name: SOURCE_TABLE
+        kind: dimension
+        expr: SOURCE_TABLE
+        data_type: VARCHAR
+        description: Fully qualified source table name
+      - name: TARGET_TABLE
+        kind: dimension
+        expr: TARGET_TABLE
+        data_type: VARCHAR
+        description: Fully qualified target table name
+      - name: LAYER_FROM
+        kind: dimension
+        expr: LAYER_FROM
+        data_type: VARCHAR
+        description: Source medallion layer (BRONZE, SILVER, GOLD)
+      - name: LAYER_TO
+        kind: dimension
+        expr: LAYER_TO
+        data_type: VARCHAR
+        description: Target medallion layer (BRONZE, SILVER, GOLD)
+      - name: ROWS_READ
+        kind: measure
+        expr: ROWS_READ
+        data_type: NUMBER
+        description: Number of rows read from source
+      - name: ROWS_WRITTEN
+        kind: measure
+        expr: ROWS_WRITTEN
+        data_type: NUMBER
+        description: Number of rows written to target
+      - name: ROWS_REJECTED
+        kind: measure
+        expr: ROWS_REJECTED
+        data_type: NUMBER
+        description: Number of rows rejected during transformation
+      - name: WAREHOUSE_NAME
+        kind: dimension
+        expr: WAREHOUSE_NAME
+        data_type: VARCHAR
+        description: Snowflake warehouse used for execution
+      - name: WAREHOUSE_SIZE
+        kind: dimension
+        expr: WAREHOUSE_SIZE
+        data_type: VARCHAR
+        description: Warehouse size (XSMALL, SMALL, MEDIUM, LARGE, etc.)
+      - name: EXECUTION_START
+        kind: dimension
+        expr: EXECUTION_START
+        data_type: TIMESTAMP_NTZ
+        description: Pipeline run start time
+      - name: EXECUTION_END
+        kind: dimension
+        expr: EXECUTION_END
+        data_type: TIMESTAMP_NTZ
+        description: Pipeline run end time
+      - name: DURATION_SECONDS
+        kind: measure
+        expr: DURATION_SECONDS
+        data_type: NUMBER
+        description: Total execution duration in seconds
+      - name: STATUS
+        kind: dimension
+        expr: STATUS
+        data_type: VARCHAR
+        description: Run status (SUCCESS, FAILED, PARTIAL)
+      - name: ERROR_MESSAGE
+        kind: dimension
+        expr: ERROR_MESSAGE
+        data_type: VARCHAR
+        description: Error details if status is FAILED
+      - name: QUERY_ID
+        kind: dimension
+        expr: QUERY_ID
+        data_type: VARCHAR
+        description: Snowflake query ID for cost attribution
+  - name: metadata_catalog
+    base_table:
+      database: HORIZON_DEMO_DB
+      schema: HEALTHCARE
+      table: METADATA_CATALOG
+    primary_key:
+      columns:
+        - TABLE_NAME
+    columns:
+      - name: TABLE_NAME
+        kind: dimension
+        expr: TABLE_NAME
+        data_type: VARCHAR
+        description: Name of the table or view
+      - name: TABLE_TYPE
+        kind: dimension
+        expr: TABLE_TYPE
+        data_type: VARCHAR
+        description: Type (BASE TABLE or VIEW)
+      - name: ROW_COUNT
+        kind: measure
+        expr: ROW_COUNT
+        data_type: NUMBER
+        description: Number of rows in the table
+      - name: PIPELINE_LAYER
+        kind: dimension
+        expr: PIPELINE_LAYER
+        data_type: VARCHAR
+        description: Medallion layer (BRONZE, SILVER, GOLD)
+      - name: LAST_LOAD_TIME
+        kind: dimension
+        expr: LAST_LOAD_TIME
+        data_type: TIMESTAMP_NTZ
+        description: Most recent pipeline load timestamp
+      - name: LAST_PIPELINE_STATUS
+        kind: dimension
+        expr: LAST_PIPELINE_STATUS
+        data_type: VARCHAR
+        description: Status of the most recent pipeline run
+      - name: AVG_ROWS_PER_LOAD
+        kind: measure
+        expr: AVG_ROWS_PER_LOAD
+        data_type: NUMBER
+        description: Average rows written per pipeline execution
+      - name: AVG_LOAD_DURATION_SEC
+        kind: measure
+        expr: AVG_LOAD_DURATION_SEC
+        data_type: NUMBER
+        description: Average pipeline duration in seconds
+      - name: WAREHOUSE_NAME
+        kind: dimension
+        expr: WAREHOUSE_NAME
+        data_type: VARCHAR
+        description: Warehouse used for pipeline execution
+      - name: WAREHOUSE_SIZE
+        kind: dimension
+        expr: WAREHOUSE_SIZE
+        data_type: VARCHAR
+        description: Warehouse size used
+      - name: PIPELINE_RUN_COUNT
+        kind: measure
+        expr: PIPELINE_RUN_COUNT
+        data_type: NUMBER
+        description: Total number of pipeline runs for this table
+      - name: PIPELINE_SUCCESS_RATE_PCT
+        kind: measure
+        expr: PIPELINE_SUCCESS_RATE_PCT
+        data_type: NUMBER
+        description: Percentage of successful pipeline runs
+      - name: DOWNSTREAM_COUNT
+        kind: measure
+        expr: DOWNSTREAM_COUNT
+        data_type: NUMBER
+        description: Number of downstream dependent objects
+      - name: STALENESS_SECONDS
+        kind: measure
+        expr: STALENESS_SECONDS
+        data_type: NUMBER
+        description: Seconds since last data modification
+metrics:
+  - name: total_pipeline_runs
+    description: Total number of pipeline executions
+    expr: COUNT(DISTINCT pipeline_log.EXECUTION_ID)
+    data_type: NUMBER
+  - name: successful_runs
+    description: Number of successful pipeline runs
+    expr: COUNT(DISTINCT CASE WHEN pipeline_log.STATUS = 'SUCCESS' THEN pipeline_log.EXECUTION_ID END)
+    data_type: NUMBER
+  - name: failed_runs
+    description: Number of failed pipeline runs
+    expr: COUNT(DISTINCT CASE WHEN pipeline_log.STATUS = 'FAILED' THEN pipeline_log.EXECUTION_ID END)
+    data_type: NUMBER
+  - name: pipeline_success_rate
+    description: Percentage of pipeline runs that succeeded
+    expr: "COUNT(DISTINCT CASE WHEN pipeline_log.STATUS = 'SUCCESS' THEN pipeline_log.EXECUTION_ID END) * 100.0 / NULLIF(COUNT(DISTINCT pipeline_log.EXECUTION_ID), 0)"
+    data_type: NUMBER
+  - name: avg_duration
+    description: Average pipeline execution duration in seconds
+    expr: AVG(pipeline_log.DURATION_SECONDS)
+    data_type: NUMBER
+  - name: total_rows_processed
+    description: Total rows written across all pipeline runs
+    expr: SUM(pipeline_log.ROWS_WRITTEN)
+    data_type: NUMBER
+  - name: total_rows_rejected
+    description: Total rows rejected across all pipeline runs
+    expr: SUM(pipeline_log.ROWS_REJECTED)
+    data_type: NUMBER
+  - name: rejection_rate
+    description: Percentage of rows rejected vs read
+    expr: "SUM(pipeline_log.ROWS_REJECTED) * 100.0 / NULLIF(SUM(pipeline_log.ROWS_READ), 0)"
+    data_type: NUMBER
+  - name: avg_staleness_seconds
+    description: Average data staleness across tables in the catalog
+    expr: AVG(metadata_catalog.STALENESS_SECONDS)
+    data_type: NUMBER
+  - name: tables_with_failures
+    description: Count of tables whose last pipeline run was not SUCCESS
+    expr: "COUNT(DISTINCT CASE WHEN metadata_catalog.LAST_PIPELINE_STATUS != 'SUCCESS' THEN metadata_catalog.TABLE_NAME END)"
+    data_type: NUMBER

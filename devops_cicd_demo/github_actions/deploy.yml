@@ -1,0 +1,179 @@
+name: Deploy to Snowflake
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.sql'
+      - 'scos_pipeline/src/**'
+      - 'crm_demo/src/**'
+      - 'devops_cicd_demo/**'
+  pull_request:
+    branches: [main]
+
+env:
+  SNOWFLAKE_ACCOUNT: <ACCOUNT_LOCATOR>
+  SNOWFLAKE_USER: <SERVICE_USER>
+  SNOWFLAKE_WAREHOUSE: MY_WH
+  SNOWFLAKE_DATABASE: DEMO
+  SNOWFLAKE_SCHEMA: HEALTHCARE_DEMO
+
+jobs:
+  # ---- Job 1: Validate SQL syntax ----
+  validate:
+    name: Validate SQL
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install sqlfluff
+        run: pip install sqlfluff
+
+      - name: Lint SQL files
+        run: |
+          sqlfluff lint \
+            --dialect snowflake \
+            --exclude-rules LT05,LT09 \
+            scos_pipeline/sql/ \
+            crm_demo/sql/ \
+            ai_layer/sql/ \
+            dq_mdm/sql/ \
+            swap_ops_demo/ \
+            streaming_demo/sql/ \
+            devops_cicd_demo/
+        continue-on-error: true
+
+  # ---- Job 2: Deploy (only on push to main) ----
+  deploy:
+    name: Deploy via Git Repo
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # IMPORTANT: snow bundle requires the dev CLI (3.20.0.dev0+), not standard snowflake-cli-labs
+      - name: Install Dev Snow CLI
+        run: |
+          pip install uv
+          uv tool install git+https://github.com/snowflakedb/snowflake-cli@code
+          snow --version
+
+      - name: Configure Snow CLI
+        run: |
+          mkdir -p ~/.snowflake
+          cat > ~/.snowflake/connections.toml << EOF
+          [my_conn]
+          account = "${{ secrets.SNOWFLAKE_ACCOUNT }}"
+          user = "<SERVICE_USER>"
+          authenticator = "PROGRAMMATIC_ACCESS_TOKEN"
+          password = "${{ secrets.SNOWFLAKE_PAT }}"
+          warehouse = "MY_WH"
+          database = "DEMO"
+          schema = "HEALTHCARE_DEMO"
+          role = "SYSADMIN"
+          EOF
+
+      # ---- Path 1: SQL Deployment (EXECUTE IMMEDIATE FROM) ----
+      - name: Fetch Git Repository in Snowflake
+        run: |
+          snow sql -q "ALTER GIT REPOSITORY DEMO.HEALTHCARE_DEMO.HEALTHCARE_DEMO_REPO FETCH;" \
+            --connection my_conn
+
+      - name: Deploy SQL layers from Git
+        run: |
+          snow sql -q "
+            EXECUTE IMMEDIATE FROM
+              @DEMO.HEALTHCARE_DEMO.HEALTHCARE_DEMO_REPO/branches/main/devops_cicd_demo/deploy/deploy_from_git.sql
+              USING (branch => 'main', env => 'prod');
+          " --connection my_conn
+
+      # ---- Path 2: Code Bundle Deployment (Dev CLI) ----
+      - name: Package Healthcare Code Bundle
+        run: |
+          cd scos_pipeline
+          snow bundle create CB_HEALTHCARE_SPARK \
+            --source src \
+            --exclude __pycache__ \
+            --overwrite \
+            --connection my_conn \
+            --database DEMO \
+            --schema HEALTHCARE_DEMO \
+            --warehouse MY_WH
+
+      - name: Package CRM Code Bundle
+        run: |
+          cd crm_demo
+          snow bundle create CB_CRM_SPARK \
+            --source src \
+            --exclude __pycache__ \
+            --overwrite \
+            --connection my_conn \
+            --database DEMO \
+            --schema CRM_DEMO \
+            --warehouse MY_WH
+
+      # ---- Optional: Execute pipelines via standard SQL ----
+      # Uncomment to auto-run pipelines after deploy:
+      # - name: Run Market Share Analysis
+      #   run: |
+      #     snow sql -q "
+      #       EXECUTE CODE BUNDLE CB_HEALTHCARE_SPARK
+      #         ENTRYPOINT = '05_market_share_analysis.py'
+      #         ARGUMENTS = ('--ds', CURRENT_DATE()::VARCHAR)
+      #         EXECUTION_NAME = 'cicd_market_share_analysis';
+      #     " --connection my_conn
+
+  # ---- Job 3: Dry-run on PRs ----
+  dry-run:
+    name: Dry Run (PR Preview)
+    needs: validate
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Snow CLI
+        run: pip install snowflake-cli-labs
+
+      - name: Configure Snow CLI
+        run: |
+          mkdir -p ~/.snowflake
+          cat > ~/.snowflake/connections.toml << EOF
+          [my_conn]
+          account = "${{ secrets.SNOWFLAKE_ACCOUNT }}"
+          user = "<SERVICE_USER>"
+          authenticator = "PROGRAMMATIC_ACCESS_TOKEN"
+          password = "${{ secrets.SNOWFLAKE_PAT }}"
+          warehouse = "MY_WH"
+          database = "DEMO"
+          schema = "HEALTHCARE_DEMO"
+          role = "SYSADMIN"
+          EOF
+
+      - name: Fetch and Dry-Run SQL
+        run: |
+          snow sql -q "ALTER GIT REPOSITORY DEMO.HEALTHCARE_DEMO.HEALTHCARE_DEMO_REPO FETCH;" \
+            --connection my_conn
+
+          snow sql -q "
+            EXECUTE IMMEDIATE FROM
+              @DEMO.HEALTHCARE_DEMO.HEALTHCARE_DEMO_REPO/branches/main/devops_cicd_demo/deploy/deploy_from_git.sql
+              USING (branch => 'main', env => 'prod')
+              DRY_RUN = TRUE;
+          " --connection my_conn
+      # Note: Code Bundle packaging (snow bundle create) has no dry-run.
+      # EXECUTE CODE BUNDLE can be previewed via DRY_RUN in the deploy script.

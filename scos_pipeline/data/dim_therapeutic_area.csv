@@ -1,0 +1,9 @@
+THERAPEUTIC_AREA_ID,AREA_NAME,AREA_KEY,DISEASE_CATEGORY
+1,Oncology,6335120e,Solid Tumors
+2,Immunology,b0cf3ebb,Autoimmune
+3,Cardiology,0378604a,Cardiovascular
+4,Neurology,65a469c4,CNS Disorders
+5,Infectious Disease,59c291a9,Viral Infections
+6,Respiratory,cd22c884,Pulmonary
+7,Endocrinology,27d333b0,Metabolic
+8,Dermatology,4ee172ad,Skin Conditions

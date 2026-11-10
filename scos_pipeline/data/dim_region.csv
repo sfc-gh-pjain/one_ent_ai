@@ -1,0 +1,9 @@
+REGION_ID,REGION_NAME,REGION_KEY,COUNTRY
+1,Northeast,19a04da3,US
+2,Southeast,32e05adf,US
+3,Midwest,a9f4dc45,US
+4,Southwest,ddad53ef,US
+5,West,cf95b5dd,US
+6,Canada,1d0a9934,CA
+7,Europe-West,e76b8432,EU
+8,Asia-Pacific,3ee0f0ae,APAC

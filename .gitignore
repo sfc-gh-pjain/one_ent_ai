@@ -1,0 +1,26 @@
+# Airflow runtime DB + config (contain secrets) — all locations
+**/airflow.db
+**/airflow.db-shm
+**/airflow.db-wal
+**/airflow.cfg
+**/.airflow/
+airflow/logs/
+
+# Keys / secrets
+streaming_demo/keys/
+**/*.p8
+**/*.pem
+**/*.env
+*password*
+*secret*
+*.generated
+
+# Excluded from public repo
+blog/
+docs/
+
+# Runtime / junk
+*.log
+*.zip
+.DS_Store
+__MACOSX/

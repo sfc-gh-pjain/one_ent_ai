@@ -1,0 +1,16 @@
+DRUG_ID,DRUG_NAME,BRAND_NAME,GENERIC_NAME,THERAPEUTIC_AREA,INDICATION,DOSAGE_FORM,LAUNCH_DATE,IS_SPECIALTY,ANNUAL_REVENUE_MM
+40231fe3-5ca5-534c-a841-da1a7e145aca,Cardivex,Cardivex,Atorvastatin Calcium,Cardiology,Hyperlipidemia,Tablet,2020-03-08,False,789.9
+6004c2d4-7826-54be-8291-04cd142769fb,Immunofort,Immunofort,Adalimumab,Immunology,Rheumatoid Arthritis,Injection,2022-03-06,True,5567.7
+d7f6a1ae-3981-5f32-9385-28c7d002abe4,Oncovir,Oncovir,Pembrolizumab,Oncology,Non-Small Cell Lung Cancer,IV Infusion,2017-06-18,True,5540.0
+b5c95574-84f1-5d86-acf5-1a8bafdc2e3f,Neurosyn,Neurosyn,Levetiracetam,Neurology,Epilepsy,Tablet,2024-06-14,False,1548.2
+d80ee489-a479-5e5e-a34d-b53682d539d8,Respiclear,Respiclear,Fluticasone Propionate,Respiratory,Asthma,Inhaler,2015-08-18,False,496.6
+fa93e5b6-ed00-5d86-b10e-4cd27dfdc028,Glyconorm,Glyconorm,Metformin Extended Release,Endocrinology,Type 2 Diabetes,Tablet,2015-05-12,False,1619.8
+9c9a1dcc-48c5-58c1-a284-56a2fb969d4f,Dermasolv,Dermasolv,Dupilumab,Dermatology,Atopic Dermatitis,Injection,2019-07-02,True,2288.4
+cfd27d4d-9918-51f1-be1c-1d9680e7721b,Infectiguard,Infectiguard,Letermovir,Infectious Disease,CMV Prophylaxis,Tablet,2017-05-14,False,1830.6
+7a394a63-fc35-5a52-897f-2f5a3c4eae07,Thrombostop,Thrombostop,Rivaroxaban,Cardiology,DVT Prevention,Tablet,2021-05-12,False,1758.9
+57b339db-e5d5-57eb-be60-8b0aa3221943,Psorifix,Psorifix,Secukinumab,Immunology,Psoriasis,Injection,2018-07-12,True,1858.5
+9a21239b-1194-58cf-a4de-e817e8e76a99,Osteoguard,Osteoguard,Denosumab,Endocrinology,Osteoporosis,Injection,2020-08-06,True,3285.9
+1995f22f-9e50-58db-8a4b-2bb59d8400b8,Migranex,Migranex,Erenumab,Neurology,Migraine Prevention,Injection,2022-03-18,True,3779.0
+718ae937-0c7c-59ce-a6e9-3391179f5c99,Hepatovir,Hepatovir,Sofosbuvir,Infectious Disease,Hepatitis C,Tablet,2017-12-20,False,322.3
+e8296274-4c3b-5680-a471-9dd16074cd52,Pulmovent,Pulmovent,Tiotropium Bromide,Respiratory,COPD,Inhaler,2023-05-10,False,1144.7
+207d4635-a9ad-553e-ad55-5eb5191d2419,Melanostop,Melanostop,Nivolumab,Oncology,Melanoma,IV Infusion,2017-12-12,True,6026.7

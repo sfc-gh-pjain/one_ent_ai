@@ -1,0 +1,234 @@
+-- ============================================================
+-- Business Rules: Streams & Tasks for MDM
+-- Healthcare Commercial Analytics Pipeline
+-- ============================================================
+-- Idempotent — safe to re-run
+
+USE ROLE SYSADMIN;
+USE WAREHOUSE MY_WH;
+USE SCHEMA DEMO.HEALTHCARE_DEMO;
+
+-- ============================================================
+-- 1. Create Streams on Source Tables (CDC)
+-- ============================================================
+
+CREATE OR REPLACE STREAM STREAM_RAW_PRESCRIPTIONS ON TABLE RAW_PRESCRIPTIONS
+    APPEND_ONLY = FALSE;
+
+CREATE OR REPLACE STREAM STREAM_RAW_HCP_PROFILES ON TABLE RAW_HCP_PROFILES
+    APPEND_ONLY = FALSE;
+
+CREATE OR REPLACE STREAM STREAM_RAW_HCP_ENGAGEMENTS ON TABLE RAW_HCP_ENGAGEMENTS
+    APPEND_ONLY = FALSE;
+
+-- ============================================================
+-- 2. MDM Violation Log Table
+-- ============================================================
+
+CREATE OR REPLACE TABLE MDM_VIOLATION_LOG (
+    VIOLATION_ID VARCHAR(36) DEFAULT UUID_STRING(),
+    RULE_NAME VARCHAR(200),
+    TABLE_NAME VARCHAR(200),
+    RECORD_ID VARCHAR(200),
+    VIOLATION_DETAIL VARCHAR(2000),
+    SEVERITY VARCHAR(20),
+    DETECTED_AT TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+    RESOLVED BOOLEAN DEFAULT FALSE,
+    RESOLVED_AT TIMESTAMP_NTZ
+);
+
+-- ============================================================
+-- 3. Golden Record Table for HCP MDM
+-- ============================================================
+
+CREATE OR REPLACE TABLE HCP_GOLDEN_RECORD (
+    HCP_ID VARCHAR(36),
+    HCP_NAME VARCHAR(200),
+    SPECIALTY VARCHAR(100),
+    SUB_SPECIALTY VARCHAR(100),
+    CREDENTIAL VARCHAR(20),
+    NPI_NUMBER VARCHAR(20),
+    TERRITORY_ID INTEGER,
+    THERAPEUTIC_AREA_ID INTEGER,
+    PRACTICE_TYPE VARCHAR(50),
+    YEARS_EXPERIENCE INTEGER,
+    SOURCE_COUNT INTEGER DEFAULT 1,
+    CONFIDENCE_SCORE FLOAT DEFAULT 1.0,
+    IS_GOLDEN BOOLEAN DEFAULT TRUE,
+    CREATED_AT TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+    UPDATED_AT TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+);
+
+-- ============================================================
+-- 4. Stored Procedures for Multi-Statement Task Bodies
+-- ============================================================
+
+CREATE OR REPLACE PROCEDURE SP_MDM_HCP_DEDUP()
+RETURNS VARCHAR
+LANGUAGE SQL
+EXECUTE AS CALLER
+AS
+'
+BEGIN
+    MERGE INTO HCP_GOLDEN_RECORD tgt
+    USING (
+        SELECT * FROM (
+            SELECT
+                HCP_ID, HCP_NAME, SPECIALTY, SUB_SPECIALTY, CREDENTIAL,
+                NPI_NUMBER, TERRITORY_ID, THERAPEUTIC_AREA_ID, PRACTICE_TYPE, YEARS_EXPERIENCE,
+                ROW_NUMBER() OVER (
+                    PARTITION BY COALESCE(NPI_NUMBER, HCP_ID)
+                    ORDER BY ETL_UPDATE_DATETIME_UTC DESC NULLS LAST
+                ) AS rn
+            FROM RAW_HCP_PROFILES
+        )
+        WHERE rn = 1
+    ) src
+    ON tgt.HCP_ID = src.HCP_ID
+    WHEN MATCHED THEN UPDATE SET
+        tgt.HCP_NAME = src.HCP_NAME,
+        tgt.SPECIALTY = src.SPECIALTY,
+        tgt.SUB_SPECIALTY = src.SUB_SPECIALTY,
+        tgt.CREDENTIAL = src.CREDENTIAL,
+        tgt.NPI_NUMBER = src.NPI_NUMBER,
+        tgt.TERRITORY_ID = src.TERRITORY_ID,
+        tgt.THERAPEUTIC_AREA_ID = src.THERAPEUTIC_AREA_ID,
+        tgt.PRACTICE_TYPE = src.PRACTICE_TYPE,
+        tgt.YEARS_EXPERIENCE = src.YEARS_EXPERIENCE,
+        tgt.UPDATED_AT = CURRENT_TIMESTAMP()
+    WHEN NOT MATCHED THEN INSERT (
+        HCP_ID, HCP_NAME, SPECIALTY, SUB_SPECIALTY, CREDENTIAL,
+        NPI_NUMBER, TERRITORY_ID, THERAPEUTIC_AREA_ID, PRACTICE_TYPE, YEARS_EXPERIENCE
+    ) VALUES (
+        src.HCP_ID, src.HCP_NAME, src.SPECIALTY, src.SUB_SPECIALTY, src.CREDENTIAL,
+        src.NPI_NUMBER, src.TERRITORY_ID, src.THERAPEUTIC_AREA_ID, src.PRACTICE_TYPE, src.YEARS_EXPERIENCE
+    );
+
+    INSERT INTO MDM_VIOLATION_LOG (RULE_NAME, TABLE_NAME, RECORD_ID, VIOLATION_DETAIL, SEVERITY)
+    SELECT
+        ''HCP_DUPLICATE_NPI'',
+        ''RAW_HCP_PROFILES'',
+        HCP_ID,
+        ''Duplicate NPI: '' || NPI_NUMBER || '' found for HCP: '' || HCP_NAME,
+        ''WARNING''
+    FROM (
+        SELECT HCP_ID, NPI_NUMBER, HCP_NAME,
+            ROW_NUMBER() OVER (PARTITION BY NPI_NUMBER ORDER BY ETL_UPDATE_DATETIME_UTC DESC) AS rn
+        FROM RAW_HCP_PROFILES
+        WHERE NPI_NUMBER IS NOT NULL
+    )
+    WHERE rn > 1;
+
+    RETURN ''HCP dedup complete'';
+END;
+';
+
+CREATE OR REPLACE PROCEDURE SP_MDM_ENGAGEMENT_VALIDATION()
+RETURNS VARCHAR
+LANGUAGE SQL
+EXECUTE AS CALLER
+AS
+'
+BEGIN
+    INSERT INTO MDM_VIOLATION_LOG (RULE_NAME, TABLE_NAME, RECORD_ID, VIOLATION_DETAIL, SEVERITY)
+    SELECT
+        ''ENGAGEMENT_ORPHAN_DRUG'',
+        ''RAW_HCP_ENGAGEMENTS'',
+        e.ENGAGEMENT_ID,
+        ''Drug ID '' || e.DRUG_ID || '' not found in DIM_DRUG'',
+        ''CRITICAL''
+    FROM RAW_HCP_ENGAGEMENTS e
+    LEFT JOIN DIM_DRUG d ON e.DRUG_ID = d.DRUG_ID
+    WHERE d.DRUG_ID IS NULL
+      AND e.DRUG_ID IS NOT NULL
+      AND e.ENGAGEMENT_ID NOT IN (SELECT RECORD_ID FROM MDM_VIOLATION_LOG WHERE RULE_NAME = ''ENGAGEMENT_ORPHAN_DRUG'');
+
+    INSERT INTO MDM_VIOLATION_LOG (RULE_NAME, TABLE_NAME, RECORD_ID, VIOLATION_DETAIL, SEVERITY)
+    SELECT
+        ''ENGAGEMENT_FUTURE_DATE'',
+        ''RAW_HCP_ENGAGEMENTS'',
+        ENGAGEMENT_ID,
+        ''Engagement date '' || ENGAGEMENT_DATE || '' is in the future'',
+        ''WARNING''
+    FROM RAW_HCP_ENGAGEMENTS
+    WHERE ENGAGEMENT_DATE > CURRENT_DATE()
+      AND ENGAGEMENT_ID NOT IN (SELECT RECORD_ID FROM MDM_VIOLATION_LOG WHERE RULE_NAME = ''ENGAGEMENT_FUTURE_DATE'');
+
+    RETURN ''Engagement validation complete'';
+END;
+';
+
+-- ============================================================
+-- 5. Business Rule Tasks
+-- ============================================================
+
+-- Task 1: HCP Deduplication (Golden Record Selection)
+CREATE OR REPLACE TASK TASK_MDM_HCP_DEDUP
+    WAREHOUSE = MY_WH
+    SCHEDULE = 'USING CRON 0 */2 * * * America/New_York'
+    WHEN SYSTEM$STREAM_HAS_DATA('STREAM_RAW_HCP_PROFILES')
+AS
+    CALL SP_MDM_HCP_DEDUP();
+
+-- Task 2: Rx Volume Outlier Detection
+CREATE OR REPLACE TASK TASK_MDM_RX_OUTLIER_DETECTION
+    WAREHOUSE = MY_WH
+    SCHEDULE = 'USING CRON 30 */2 * * * America/New_York'
+    WHEN SYSTEM$STREAM_HAS_DATA('STREAM_RAW_PRESCRIPTIONS')
+AS
+    INSERT INTO MDM_VIOLATION_LOG (RULE_NAME, TABLE_NAME, RECORD_ID, VIOLATION_DETAIL, SEVERITY)
+    SELECT
+        'RX_VOLUME_OUTLIER',
+        'RAW_PRESCRIPTIONS',
+        rx.RX_ID,
+        'Rx quantity ' || rx.QUANTITY || ' exceeds 5x territory avg (' || ROUND(avg_qty.avg_q, 1) || ')',
+        'CRITICAL'
+    FROM RAW_PRESCRIPTIONS rx
+    JOIN (
+        SELECT TERRITORY_ID, AVG(QUANTITY) AS avg_q
+        FROM RAW_PRESCRIPTIONS
+        GROUP BY TERRITORY_ID
+    ) avg_qty ON rx.TERRITORY_ID = avg_qty.TERRITORY_ID
+    WHERE rx.QUANTITY > avg_qty.avg_q * 5
+      AND rx.RX_ID NOT IN (SELECT RECORD_ID FROM MDM_VIOLATION_LOG WHERE RULE_NAME = 'RX_VOLUME_OUTLIER');
+
+-- Task 3: Engagement Attribution Validation
+CREATE OR REPLACE TASK TASK_MDM_ENGAGEMENT_VALIDATION
+    WAREHOUSE = MY_WH
+    SCHEDULE = 'USING CRON 15 */2 * * * America/New_York'
+    WHEN SYSTEM$STREAM_HAS_DATA('STREAM_RAW_HCP_ENGAGEMENTS')
+AS
+    CALL SP_MDM_ENGAGEMENT_VALIDATION();
+
+-- Task 4: HCP Tier Validation
+CREATE OR REPLACE TASK TASK_MDM_TIER_VALIDATION
+    WAREHOUSE = MY_WH
+    SCHEDULE = 'USING CRON 45 */2 * * * America/New_York'
+AS
+    INSERT INTO MDM_VIOLATION_LOG (RULE_NAME, TABLE_NAME, RECORD_ID, VIOLATION_DETAIL, SEVERITY)
+    SELECT
+        'INVALID_HCP_TIER',
+        'HCP_TIERED_PROFILES',
+        HCP_ID,
+        'Invalid tier value: ' || COALESCE(TIER, 'NULL') || ', decile: ' || COALESCE(TO_VARCHAR(DECILE), 'NULL'),
+        'WARNING'
+    FROM HCP_TIERED_PROFILES
+    WHERE (TIER NOT IN ('Tier 1','Tier 2','Tier 3','Tier 4','Tier 5') OR TIER IS NULL
+           OR DECILE < 1 OR DECILE > 10 OR DECILE IS NULL)
+      AND HCP_ID NOT IN (SELECT RECORD_ID FROM MDM_VIOLATION_LOG WHERE RULE_NAME = 'INVALID_HCP_TIER' AND RESOLVED = FALSE);
+
+-- ============================================================
+-- 6. Resume Tasks
+-- ============================================================
+
+ALTER TASK TASK_MDM_HCP_DEDUP RESUME;
+ALTER TASK TASK_MDM_RX_OUTLIER_DETECTION RESUME;
+ALTER TASK TASK_MDM_ENGAGEMENT_VALIDATION RESUME;
+ALTER TASK TASK_MDM_TIER_VALIDATION RESUME;
+
+-- ============================================================
+-- 7. Verify
+-- ============================================================
+
+SHOW STREAMS IN SCHEMA DEMO.HEALTHCARE_DEMO;
+SHOW TASKS IN SCHEMA DEMO.HEALTHCARE_DEMO;

@@ -1,0 +1,201 @@
+OPP_ID,ACCOUNT_ID,OPP_NAME,STAGE,AMOUNT,CLOSE_DATE,CREATED_DATE,IS_CLOSED,IS_WON
+2754905a-7656-5ae0-a17f-078d262783c0,6ff4aacd-3d77-5cec-ae4b-9b3a82ddf968,Torque Labs - Clos Deal 0,Closed Won,1385129.05,2024-09-02,2024-03-17,True,True
+a4edba05-0855-5c9a-81c1-e42b5e97026d,46664507-cb3b-5f66-b5f7-1f29b1101e56,Titan Corp - Clos Deal 1,Closed Won,1169194.04,2024-08-03,2024-03-16,True,True
+e94328fb-f3f2-5081-8df2-91c3b5f27644,4f672d93-6dc6-5ad5-9ed4-d5aec6b31cd7,Forge Group - Pros Deal 2,Prospecting,735656.52,2025-06-01,2025-04-22,False,False
+66ca081e-667e-5c79-8423-fea1ce625206,7e8d5dbb-8fcb-5bc1-a484-dc38038228ff,Pinnacle Systems - Qual Deal 3,Qualification,506564.18,2024-06-21,2024-02-22,False,False
+a43202a5-1edc-5ed4-a0f4-0af3184f7b98,9d931b8f-a58d-505e-8952-2823d83ddbfd,Keystone Global - Prop Deal 4,Proposal,1750678.32,2025-07-21,2025-05-13,False,False
+02e35681-65f1-57fb-b241-d03538476fb8,5e17e4a4-c748-5421-a981-8ac4ce123b6d,Lexicon Technologies - Clos Deal 5,Closed Won,1952650.01,2025-05-05,2025-02-19,True,True
+7e73a909-c07c-5be6-b97a-5d645ffd5676,0b671594-6b81-5fd6-9f6d-c639d134fce6,Pinnacle Corp - Pros Deal 6,Prospecting,1475763.3,2024-11-01,2024-06-19,False,False
+3bc74230-1947-545d-a59e-4b83b30ea051,e1dc51ca-2442-5b0a-bbd1-ff08d07a2b27,Radiant Inc - Clos Deal 7,Closed Won,1623391.14,2024-07-25,2024-05-16,True,True
+bf2926f6-4e1d-5eed-ad89-3a5b8da45d5e,930ee687-98d3-5d1b-af55-52dd2d78e85d,Dynamo Global - Pros Deal 8,Prospecting,1745611.9,2025-08-12,2025-03-15,False,False
+bee2ab8e-ad1a-5404-9b8c-5077469b9dd9,43af5cfe-8214-53c0-8e63-7027e33cae35,Onyx Group - Qual Deal 9,Qualification,1837719.28,2024-10-14,2024-06-28,False,False
+26ccc62f-a8fd-57d3-9516-97378e933d58,43af5cfe-8214-53c0-8e63-7027e33cae35,Onyx Group - Qual Deal 10,Qualification,1323466.03,2024-11-14,2024-07-23,False,False
+ea230a64-4c88-5ce6-96b3-a4a4e57543d0,3ec3dd14-5b73-52b2-8ad6-bddd89ea77cb,Torque Global - Clos Deal 11,Closed Won,1934109.32,2024-09-18,2024-05-22,True,True
+5b0ecdd1-027e-5fb4-8625-8c5fa4bdf3bb,bb0fb10c-ffae-584e-9f13-bbb6e995ae47,Velocity Global - Prop Deal 12,Proposal,1362241.06,2025-08-21,2025-03-07,False,False
+961f4289-4489-55b8-a2d1-bb43eebe10f7,44243c65-c1bb-5384-b8b6-2dc67f159489,Nova Corp - Clos Deal 13,Closed Won,239530.09,2025-08-15,2025-05-11,True,True
+5d9b3842-e63d-5497-a37b-1852ccd81ab3,4f4bc3b9-27bb-513a-ba9d-0da71f8f4d58,Cipher Global - Prop Deal 14,Proposal,1967265.64,2024-03-17,2024-01-20,False,False
+63eb9a25-3d09-597e-a374-0befedf02a52,5674b2ac-c8bc-53c1-8ad6-93abf454f3e8,Catalyst Systems - Prop Deal 15,Proposal,1459804.67,2024-10-28,2024-06-09,False,False
+19bb48c3-cd8d-5b0d-aa85-10edd17408f5,5674b2ac-c8bc-53c1-8ad6-93abf454f3e8,Catalyst Systems - Clos Deal 16,Closed Lost,240135.11,2025-09-29,2025-04-05,True,False
+45822865-a62f-5fb9-baac-64e3158ee004,555fa3b5-139e-5fad-aaf5-4e90ade1eeb0,Cipher Group - Qual Deal 17,Qualification,1420482.71,2024-06-12,2024-01-01,False,False
+89802c6c-2a30-5a65-bd9d-cb6ccadea732,d8f42658-cb6b-56fd-8968-7ffd84fdc700,Cipher Corp - Nego Deal 18,Negotiation,1881123.61,2025-04-02,2025-01-12,False,False
+7faf03d8-2ba4-549f-b917-f4828fc3cd6e,23ba5428-0f79-5c2c-8696-8bd81e5fc9ca,Sigma Solutions - Prop Deal 19,Proposal,1898260.23,2025-08-08,2025-04-16,False,False
+647d1deb-69e5-5811-bb83-0adc07762717,ed241af5-c9e0-54fe-b2a8-3b608c7d5219,Cipher Inc - Qual Deal 20,Qualification,1697550.41,2025-04-19,2025-01-03,False,False
+b9ffa554-166c-5110-b21f-103d123e644d,6a8e4f20-73a7-5719-970b-7a3dbdc3b2d2,Nova Inc - Qual Deal 21,Qualification,822701.89,2024-11-07,2024-07-25,False,False
+b29ca975-e857-5244-90ef-2305c84a9db5,0e3dfd0c-2e9a-538b-bbd8-213b43bcd12a,Flux Global - Pros Deal 22,Prospecting,846688.2,2025-08-31,2025-04-26,False,False
+a664f7f8-5a68-5e10-b422-19d9b7f5cd1b,545c1dad-5209-5352-acf7-a78d8584d7c4,Lumina Inc - Nego Deal 23,Negotiation,356314.41,2025-02-02,2024-10-18,False,False
+bb661cf4-d396-51d8-b250-318b3588c233,931af9f7-826e-5809-819d-6f8b3ce76efc,Pinnacle Labs - Prop Deal 24,Proposal,10807.82,2024-08-17,2024-05-26,False,False
+303a6049-c8a9-56e1-b3e2-e11fb2598e97,48acd5b7-d7fe-5c11-a5f9-2f441c6bc17f,Onyx Solutions - Nego Deal 25,Negotiation,1217256.53,2024-11-09,2024-06-13,False,False
+290958a5-9ce8-57c9-885b-16f6d6e3276e,3497aeaa-3917-5ff2-b35e-1b3b84611d47,Radiant Group - Prop Deal 26,Proposal,435265.79,2024-11-11,2024-08-30,False,False
+471eb63e-c178-54c0-b6b6-cab7b4e99459,e1dc51ca-2442-5b0a-bbd1-ff08d07a2b27,Radiant Inc - Pros Deal 27,Prospecting,1035749.5,2025-03-15,2024-11-20,False,False
+df3cca30-9002-5a1d-a90c-7b6f594286fa,ac4cbf36-6ec9-53c7-8ff1-af0e02b88581,Falcon Global - Clos Deal 28,Closed Won,1504764.89,2025-03-29,2024-12-10,True,True
+2939ce4c-cda6-5ce5-bda9-58f2cbef1774,43af5cfe-8214-53c0-8e63-7027e33cae35,Onyx Group - Clos Deal 29,Closed Won,303234.38,2024-04-25,2024-01-24,True,True
+7be3b98f-7297-5d36-aed9-c52f58df7b5a,5fa767d7-f9a7-5a11-922a-d724d1a7f41d,Quantum Inc - Nego Deal 30,Negotiation,1539293.78,2025-01-04,2024-08-21,False,False
+addf8205-5d32-5ca3-8745-e8063eab62b3,aff36888-7617-562e-a51e-5d7dfa1b12e3,Brevity Labs - Prop Deal 31,Proposal,1439508.37,2024-12-18,2024-07-15,False,False
+8d74813b-2443-521a-a3bd-cac76afc5269,931af9f7-826e-5809-819d-6f8b3ce76efc,Pinnacle Labs - Qual Deal 32,Qualification,1315555.44,2024-02-29,2024-01-03,False,False
+b54c9de0-be76-5850-808d-e8b2265021d8,9d931b8f-a58d-505e-8952-2823d83ddbfd,Keystone Global - Prop Deal 33,Proposal,360014.5,2025-10-14,2025-05-05,False,False
+26b30b92-ee63-5eac-9164-49332c593a9b,b8c473f0-7ba8-5939-b4ab-1885153c74f0,Brevity Technologies - Pros Deal 34,Prospecting,505904.58,2025-05-10,2025-03-10,False,False
+96619848-5608-543f-8b37-89b808980f0c,b8c473f0-7ba8-5939-b4ab-1885153c74f0,Brevity Technologies - Pros Deal 35,Prospecting,934640.04,2025-03-20,2024-09-28,False,False
+36b7b654-4dce-5f4c-a1f2-fc248e6b60ca,5674b2ac-c8bc-53c1-8ad6-93abf454f3e8,Catalyst Systems - Qual Deal 36,Qualification,1512947.53,2025-01-20,2024-08-14,False,False
+0d0daf54-d4c0-5faa-8de3-e799894a7606,48acd5b7-d7fe-5c11-a5f9-2f441c6bc17f,Onyx Solutions - Clos Deal 37,Closed Won,1100265.18,2025-06-13,2025-04-04,True,True
+8982cd9f-8b71-56c4-a415-e83818dbcaa9,6af98e85-d092-5f9c-8725-694fc513d603,Lexicon Global - Clos Deal 38,Closed Won,905638.82,2025-04-22,2025-01-19,True,True
+2118f9cb-bdeb-572c-b418-f1cd9173186d,aff36888-7617-562e-a51e-5d7dfa1b12e3,Brevity Labs - Qual Deal 39,Qualification,1557572.92,2024-12-05,2024-09-05,False,False
+0d47fad9-f969-5e0d-a844-e07e47bd0655,3ec3dd14-5b73-52b2-8ad6-bddd89ea77cb,Torque Global - Prop Deal 40,Proposal,1429954.28,2024-08-07,2024-04-30,False,False
+d1fd90dd-d6a9-504e-aef5-c208e68b4880,44243c65-c1bb-5384-b8b6-2dc67f159489,Nova Corp - Qual Deal 41,Qualification,1084902.92,2024-05-18,2024-03-11,False,False
+f745ed17-c570-5497-9250-136c4a70ec97,43af5cfe-8214-53c0-8e63-7027e33cae35,Onyx Group - Prop Deal 42,Proposal,314082.48,2024-06-04,2024-04-19,False,False
+85d6d98b-d1e9-5d00-a6c3-5d69b020f208,0b671594-6b81-5fd6-9f6d-c639d134fce6,Pinnacle Corp - Prop Deal 43,Proposal,1089796.17,2024-09-14,2024-07-31,False,False
+2625fd9c-9eb6-5fc5-830a-c1dd8395760c,de2efff9-353f-5463-855c-d25c7bdbff64,Zephyr Global - Clos Deal 44,Closed Won,785058.86,2025-07-27,2025-01-29,True,True
+2ef6de36-bd5b-5737-a9db-5143a9611258,930ee687-98d3-5d1b-af55-52dd2d78e85d,Dynamo Global - Pros Deal 45,Prospecting,1762506.78,2025-02-25,2024-10-21,False,False
+9df92e7b-7355-59af-8003-818a5156b9aa,5fa767d7-f9a7-5a11-922a-d724d1a7f41d,Quantum Inc - Pros Deal 46,Prospecting,710000.02,2025-05-29,2025-01-20,False,False
+72012309-b17e-55fe-af6a-b1283e655a3b,0b671594-6b81-5fd6-9f6d-c639d134fce6,Pinnacle Corp - Prop Deal 47,Proposal,1471921.78,2025-05-10,2025-02-13,False,False
+b10131d5-7989-57ac-811b-6113e2edd12a,ead23930-7001-5f34-a97e-8b598e7f468f,Nova Solutions - Qual Deal 48,Qualification,877313.59,2024-05-23,2024-01-15,False,False
+1b209ac9-e08c-5bb8-9d53-d6c6e34fc9b3,44243c65-c1bb-5384-b8b6-2dc67f159489,Nova Corp - Nego Deal 49,Negotiation,1598303.23,2025-03-18,2025-01-05,False,False
+78b7108b-af19-58e6-8c9c-ede77f722187,b8c473f0-7ba8-5939-b4ab-1885153c74f0,Brevity Technologies - Clos Deal 50,Closed Won,1961636.74,2024-11-05,2024-09-30,True,True
+600664d7-0db0-5ef0-87fa-e2563818c750,931af9f7-826e-5809-819d-6f8b3ce76efc,Pinnacle Labs - Prop Deal 51,Proposal,1329369.52,2024-06-30,2024-02-12,False,False
+cf7c4555-90bc-5ece-9a39-d567c70301d2,4f672d93-6dc6-5ad5-9ed4-d5aec6b31cd7,Forge Group - Clos Deal 52,Closed Won,371640.76,2024-09-17,2024-05-13,True,True
+744a041a-7575-5423-90ce-764def016ac8,f5413627-a396-52f8-a62b-92fb5e9e29ca,Apex Labs - Qual Deal 53,Qualification,660423.15,2025-05-31,2025-01-24,False,False
+06c24b8f-c09f-575a-b1e2-2a9bcc300559,3ec3dd14-5b73-52b2-8ad6-bddd89ea77cb,Torque Global - Nego Deal 54,Negotiation,1665529.33,2024-06-28,2024-05-09,False,False
+dcbaf1c6-6ead-5323-92d9-923420410d98,5fa767d7-f9a7-5a11-922a-d724d1a7f41d,Quantum Inc - Pros Deal 55,Prospecting,1083443.91,2025-08-29,2025-05-02,False,False
+560ec6be-2c26-5cbe-9a08-6a589f43d916,43af5cfe-8214-53c0-8e63-7027e33cae35,Onyx Group - Nego Deal 56,Negotiation,1564653.77,2025-01-08,2024-11-29,False,False
+6d744aa1-3805-5120-bcbd-b7c8c0143fea,7093649d-ef46-506b-a0b4-60c474936de9,Catalyst Technologies - Pros Deal 57,Prospecting,502093.77,2025-04-09,2025-03-05,False,False
+facd3110-842f-5a77-82f5-d8ff23f7139d,ed241af5-c9e0-54fe-b2a8-3b608c7d5219,Cipher Inc - Qual Deal 58,Qualification,261179.74,2025-02-05,2024-12-08,False,False
+4a85ee32-aa1a-5484-b4fc-2b5900c1a054,099641f5-d9c6-5cad-9f83-26d9102c49e6,Atlas Corp - Clos Deal 59,Closed Won,935417.63,2024-09-12,2024-05-11,True,True
+9ad3bdec-2838-53eb-84ec-d979d22c8066,8016ef81-4495-5599-9b2e-0e938626e6c0,Forge Solutions - Nego Deal 60,Negotiation,1927832.14,2025-03-02,2025-01-02,False,False
+fce31a36-8f16-5d9b-990f-f14ac9025314,9d931b8f-a58d-505e-8952-2823d83ddbfd,Keystone Global - Clos Deal 61,Closed Won,1929794.34,2024-08-21,2024-02-25,True,True
+570d0d0e-f87c-5110-9568-534f83ae069c,31386ae9-f9ab-58f7-9379-a2cfec89e04d,Lexicon Inc - Clos Deal 62,Closed Won,1155835.49,2025-08-13,2025-04-09,True,True
+93910afa-f299-506e-888b-da7a2a81c85b,931af9f7-826e-5809-819d-6f8b3ce76efc,Pinnacle Labs - Clos Deal 63,Closed Won,404676.26,2025-01-30,2024-10-30,True,True
+ca173c75-6e14-59c9-a84d-b3ccdfa49a29,6f1a347b-5600-5114-8564-83ed882d0163,Catalyst Global - Nego Deal 64,Negotiation,610149.54,2025-02-14,2024-12-16,False,False
+608ffd5f-8568-59c3-be36-ab2b667e3ecf,099641f5-d9c6-5cad-9f83-26d9102c49e6,Atlas Corp - Nego Deal 65,Negotiation,700935.49,2024-12-09,2024-08-07,False,False
+df3e5e76-02c2-557e-8abf-85f9b4b5ea66,6ff4aacd-3d77-5cec-ae4b-9b3a82ddf968,Torque Labs - Prop Deal 66,Proposal,689050.04,2025-07-25,2025-03-10,False,False
+6feec9cf-6819-5da4-ba46-3f750318111f,ead23930-7001-5f34-a97e-8b598e7f468f,Nova Solutions - Pros Deal 67,Prospecting,1921967.26,2025-04-17,2024-11-21,False,False
+98908196-51a7-528f-902e-392bce33ee0a,2a82562d-7ff3-5917-be11-7c426f3fd3fc,Beacon Inc - Qual Deal 68,Qualification,360512.55,2025-01-01,2024-09-24,False,False
+2f926f09-6416-5913-b4ff-9c4f255fb739,ed241af5-c9e0-54fe-b2a8-3b608c7d5219,Cipher Inc - Clos Deal 69,Closed Won,1080964.08,2025-01-31,2024-09-04,True,True
+855df4d0-165d-5675-afbd-9bff42ce2650,48acd5b7-d7fe-5c11-a5f9-2f441c6bc17f,Onyx Solutions - Clos Deal 70,Closed Won,1189024.49,2024-09-14,2024-06-14,True,True
+a1d91a12-4382-5a2e-96d5-b1572fe20e81,ac4cbf36-6ec9-53c7-8ff1-af0e02b88581,Falcon Global - Qual Deal 71,Qualification,907095.98,2025-06-16,2025-01-19,False,False
+4fa03b29-db0d-58f3-a681-221865b1bee0,099641f5-d9c6-5cad-9f83-26d9102c49e6,Atlas Corp - Nego Deal 72,Negotiation,764188.72,2024-06-19,2024-01-15,False,False
+0a0644f9-1514-525c-82e8-e35b824bc4e4,f5413627-a396-52f8-a62b-92fb5e9e29ca,Apex Labs - Qual Deal 73,Qualification,432118.5,2025-05-19,2025-02-12,False,False
+8ec0ed1a-4e99-5e33-adf8-5bff233853ae,44243c65-c1bb-5384-b8b6-2dc67f159489,Nova Corp - Qual Deal 74,Qualification,1196348.47,2025-07-04,2025-03-26,False,False
+73354449-156a-5300-b2d0-da798d044384,0e3dfd0c-2e9a-538b-bbd8-213b43bcd12a,Flux Global - Pros Deal 75,Prospecting,1896644.53,2024-05-14,2024-02-13,False,False
+d0f012ae-b096-5f3b-a6ad-670e504a7607,a2c18885-9e62-5fff-a76a-5b7ac3f52f3f,Zenith Global - Prop Deal 76,Proposal,1114800.66,2024-10-01,2024-05-03,False,False
+ae4009e8-46f8-54b0-b5f6-4cfe40e7f4a8,bb0fb10c-ffae-584e-9f13-bbb6e995ae47,Velocity Global - Nego Deal 77,Negotiation,901867.35,2024-03-02,2024-01-09,False,False
+0046a57f-cbb0-5eff-aba9-ddbedfaa15c4,2b91a984-2ed9-59aa-87ca-6d17f67ddcaa,Apex Global - Qual Deal 78,Qualification,1386656.44,2024-11-30,2024-06-05,False,False
+6b076ff6-8d32-564e-81e0-6f0965baf8c6,23ba5428-0f79-5c2c-8696-8bd81e5fc9ca,Sigma Solutions - Prop Deal 79,Proposal,1066534.64,2025-01-22,2024-08-05,False,False
+be726cdf-5c31-5bf7-8f14-150f6d5e1437,44243c65-c1bb-5384-b8b6-2dc67f159489,Nova Corp - Prop Deal 80,Proposal,912953.07,2024-09-07,2024-06-05,False,False
+6a953d78-f0b2-5da7-8641-3b3586129209,43af5cfe-8214-53c0-8e63-7027e33cae35,Onyx Group - Pros Deal 81,Prospecting,393242.74,2024-08-16,2024-03-02,False,False
+a5b97b58-ab79-546e-b5fc-afeb906844e7,7093649d-ef46-506b-a0b4-60c474936de9,Catalyst Technologies - Nego Deal 82,Negotiation,391166.54,2025-06-15,2025-01-13,False,False
+e962794a-9659-57d7-95bd-0f39b6172cf7,3ec3dd14-5b73-52b2-8ad6-bddd89ea77cb,Torque Global - Nego Deal 83,Negotiation,1953447.98,2025-01-05,2024-09-25,False,False
+1b5d5d58-df34-59e8-bc25-8aad83f2a468,6f1a347b-5600-5114-8564-83ed882d0163,Catalyst Global - Clos Deal 84,Closed Won,599530.46,2024-09-16,2024-07-03,True,True
+0afb59f8-cf08-55c4-8fb1-6442715474f9,2899b6a7-082a-5909-a22a-cba45e133b7e,Keystone Solutions - Pros Deal 85,Prospecting,1072928.83,2024-06-30,2024-05-20,False,False
+576866ae-3aa7-5036-b439-0fa9c75e8197,9bcb056f-4064-50eb-9d4a-d49e79408751,Forge Corp - Prop Deal 86,Proposal,1397860.61,2024-08-07,2024-03-05,False,False
+c9bc3b11-221d-52fe-9156-4fbcdbebe64b,6f1a347b-5600-5114-8564-83ed882d0163,Catalyst Global - Clos Deal 87,Closed Won,1152387.8,2025-01-27,2024-08-28,True,True
+81b9f0f7-a32e-5589-925e-4e95a98f9601,3497aeaa-3917-5ff2-b35e-1b3b84611d47,Radiant Group - Qual Deal 88,Qualification,1931340.31,2024-10-08,2024-05-09,False,False
+37a438cb-1b63-569d-881c-c3553049309a,81a0883c-0dae-55ef-8e2d-524935c447a8,Brevity Solutions - Clos Deal 89,Closed Won,807407.81,2024-08-02,2024-02-07,True,True
+6a9c9087-4c27-5639-99fc-f727da5dbeab,aff36888-7617-562e-a51e-5d7dfa1b12e3,Brevity Labs - Nego Deal 90,Negotiation,311936.74,2025-08-12,2025-02-19,False,False
+12a6882c-a4ac-5cdb-b251-ba7a65e3a1f0,2899b6a7-082a-5909-a22a-cba45e133b7e,Keystone Solutions - Pros Deal 91,Prospecting,503900.0,2025-02-25,2024-10-12,False,False
+8bf4e761-99a7-5b97-8aee-d499a9740722,5674b2ac-c8bc-53c1-8ad6-93abf454f3e8,Catalyst Systems - Prop Deal 92,Proposal,1240652.52,2025-07-14,2025-02-01,False,False
+d2537fae-6513-55b0-ad64-0036bc9dd03e,431a87b0-107c-55eb-ab9a-aa72b7da2ff5,Optima Labs - Prop Deal 93,Proposal,891014.8,2025-09-12,2025-03-16,False,False
+34f4f5b0-a174-543d-adb4-838ff4f98f5f,48acd5b7-d7fe-5c11-a5f9-2f441c6bc17f,Onyx Solutions - Qual Deal 94,Qualification,1245844.37,2025-01-02,2024-11-08,False,False
+930bf489-7799-5ab2-81ca-b1fa55696b2c,7093649d-ef46-506b-a0b4-60c474936de9,Catalyst Technologies - Qual Deal 95,Qualification,429940.14,2025-01-23,2024-12-04,False,False
+391dbe83-d058-57f0-a5af-5c5975642970,8016ef81-4495-5599-9b2e-0e938626e6c0,Forge Solutions - Qual Deal 96,Qualification,1108464.57,2024-04-20,2024-03-21,False,False
+8e7791ac-1299-5cf9-ad0a-277165deeac4,0b671594-6b81-5fd6-9f6d-c639d134fce6,Pinnacle Corp - Prop Deal 97,Proposal,1191684.28,2024-07-06,2024-05-29,False,False
+684cec2b-3996-542c-bbe8-8875aa12cce1,43af5cfe-8214-53c0-8e63-7027e33cae35,Onyx Group - Qual Deal 98,Qualification,572609.56,2025-08-09,2025-03-16,False,False
+572e4089-0c56-59ad-aee1-4b0f1099d085,6ff4aacd-3d77-5cec-ae4b-9b3a82ddf968,Torque Labs - Nego Deal 99,Negotiation,1848582.98,2025-08-06,2025-02-07,False,False
+1b14be97-68bc-5828-ae53-9a00852c02a1,e1dc51ca-2442-5b0a-bbd1-ff08d07a2b27,Radiant Inc - Clos Deal 100,Closed Won,403660.24,2024-08-15,2024-02-28,True,True
+0740c440-c9dd-5808-9b1c-7d686cb557f0,43af5cfe-8214-53c0-8e63-7027e33cae35,Onyx Group - Nego Deal 101,Negotiation,1817738.78,2025-05-04,2025-02-27,False,False
+4c3839a5-2197-5eff-bb7e-020cf07eac42,6ff4aacd-3d77-5cec-ae4b-9b3a82ddf968,Torque Labs - Pros Deal 102,Prospecting,1587330.85,2025-04-24,2024-10-31,False,False
+de371360-e818-5fcd-83a0-21a564f4dff8,2b91a984-2ed9-59aa-87ca-6d17f67ddcaa,Apex Global - Prop Deal 103,Proposal,942708.96,2024-10-15,2024-06-04,False,False
+c028bea1-a55a-5bf4-a59d-efb1afafaa84,3ec3dd14-5b73-52b2-8ad6-bddd89ea77cb,Torque Global - Prop Deal 104,Proposal,992652.49,2024-03-22,2024-02-11,False,False
+0c52fea9-553e-5664-aa23-20060985bc14,48acd5b7-d7fe-5c11-a5f9-2f441c6bc17f,Onyx Solutions - Nego Deal 105,Negotiation,1211390.15,2024-03-07,2024-01-14,False,False
+bdc02ab7-42e6-5a4a-afce-8df37081b0a8,43af5cfe-8214-53c0-8e63-7027e33cae35,Onyx Group - Clos Deal 106,Closed Lost,1673557.64,2025-04-19,2024-10-21,True,False
+7742ae34-20d0-5d06-99fc-50c5f7ebe952,31386ae9-f9ab-58f7-9379-a2cfec89e04d,Lexicon Inc - Clos Deal 107,Closed Lost,1347840.35,2024-11-10,2024-05-17,True,False
+de76015c-cd5b-5a0e-9670-83fdcdd0ca5e,46664507-cb3b-5f66-b5f7-1f29b1101e56,Titan Corp - Nego Deal 108,Negotiation,358629.55,2025-02-12,2024-09-22,False,False
+8d02f631-4223-56b2-b675-ffdfd93888ab,3ec3dd14-5b73-52b2-8ad6-bddd89ea77cb,Torque Global - Qual Deal 109,Qualification,1174805.95,2025-04-25,2024-11-21,False,False
+833f2018-7dcd-5082-b0bf-566867bd7ab8,ac4cbf36-6ec9-53c7-8ff1-af0e02b88581,Falcon Global - Prop Deal 110,Proposal,822612.71,2024-08-08,2024-06-13,False,False
+534019e5-3071-5657-9ef5-82104b890599,8016ef81-4495-5599-9b2e-0e938626e6c0,Forge Solutions - Qual Deal 111,Qualification,1390410.61,2024-10-06,2024-05-27,False,False
+03beea05-a675-575f-900c-781614b2b3b3,7093649d-ef46-506b-a0b4-60c474936de9,Catalyst Technologies - Prop Deal 112,Proposal,915103.56,2024-09-12,2024-06-10,False,False
+374a0c3c-84be-5348-9599-b6bb00cd2b5a,f5413627-a396-52f8-a62b-92fb5e9e29ca,Apex Labs - Pros Deal 113,Prospecting,1547370.37,2025-08-26,2025-03-18,False,False
+504b14ef-4a98-5f58-90fd-bb4ce2190c27,93ed93c0-b3c1-53d7-99da-cb5b30db5176,Keystone Inc - Nego Deal 114,Negotiation,1089761.25,2024-09-11,2024-07-30,False,False
+39903d86-7869-5066-8dc7-5ff078321642,555fa3b5-139e-5fad-aaf5-4e90ade1eeb0,Cipher Group - Prop Deal 115,Proposal,1249041.41,2025-02-02,2024-09-12,False,False
+0b71e0a6-e9be-5d22-a64f-703e3fb2d85d,7093649d-ef46-506b-a0b4-60c474936de9,Catalyst Technologies - Pros Deal 116,Prospecting,541441.91,2024-06-19,2024-03-08,False,False
+83741e12-0baf-5bc0-9a08-be40438265ec,3497aeaa-3917-5ff2-b35e-1b3b84611d47,Radiant Group - Clos Deal 117,Closed Won,974576.48,2024-04-15,2024-01-15,True,True
+f2576908-e325-51bb-8e75-2a7faef66d94,2a82562d-7ff3-5917-be11-7c426f3fd3fc,Beacon Inc - Qual Deal 118,Qualification,1106169.62,2025-02-20,2024-10-09,False,False
+a9236b95-b230-5338-b14c-c98e5a8c9928,ac4cbf36-6ec9-53c7-8ff1-af0e02b88581,Falcon Global - Qual Deal 119,Qualification,1684397.31,2024-07-25,2024-02-28,False,False
+06976156-cc08-57b7-ae75-c681bcc43ffa,81a0883c-0dae-55ef-8e2d-524935c447a8,Brevity Solutions - Nego Deal 120,Negotiation,316402.54,2025-08-04,2025-04-22,False,False
+268e53d1-8eb9-5131-9f73-63fa79f7f42f,6a8e4f20-73a7-5719-970b-7a3dbdc3b2d2,Nova Inc - Nego Deal 121,Negotiation,836825.78,2025-02-01,2024-09-04,False,False
+589e45cd-02f7-5d9c-8c39-f79b640a944e,5e17e4a4-c748-5421-a981-8ac4ce123b6d,Lexicon Technologies - Prop Deal 122,Proposal,297837.52,2024-09-14,2024-04-07,False,False
+ac224f2a-8fe3-566c-9068-597caf5f1040,6af98e85-d092-5f9c-8725-694fc513d603,Lexicon Global - Clos Deal 123,Closed Won,1729413.6,2024-10-04,2024-05-21,True,True
+c284e4ea-4de6-5752-87e1-6516cd80c95e,44243c65-c1bb-5384-b8b6-2dc67f159489,Nova Corp - Clos Deal 124,Closed Won,1020397.97,2025-03-26,2025-02-24,True,True
+311f78da-94b4-56d2-8084-104002424d42,2b91a984-2ed9-59aa-87ca-6d17f67ddcaa,Apex Global - Nego Deal 125,Negotiation,1676577.09,2025-03-27,2024-10-23,False,False
+8954ebc0-eb1a-5be7-b044-a8a0c9003434,51e2c3bb-b93a-50a4-8d8a-8afaf7010064,Forge Inc - Prop Deal 126,Proposal,973839.36,2024-12-07,2024-06-19,False,False
+77ab3546-9cfc-5035-a18c-2a29f9fdc4d9,7093649d-ef46-506b-a0b4-60c474936de9,Catalyst Technologies - Prop Deal 127,Proposal,916135.79,2024-08-30,2024-06-13,False,False
+d9cdacec-6d5c-520f-a349-9a879a32ca3c,930ee687-98d3-5d1b-af55-52dd2d78e85d,Dynamo Global - Qual Deal 128,Qualification,772111.99,2025-07-27,2025-03-14,False,False
+3a65a733-b79a-57c1-9caf-c96fe7f5698a,46664507-cb3b-5f66-b5f7-1f29b1101e56,Titan Corp - Qual Deal 129,Qualification,951222.74,2025-08-17,2025-04-12,False,False
+07ac0fb4-1d5f-5d73-8494-074514c501bd,431a87b0-107c-55eb-ab9a-aa72b7da2ff5,Optima Labs - Clos Deal 130,Closed Lost,1586863.38,2025-02-05,2024-11-29,True,False
+a820627c-5dfe-5cb8-a313-55b49c56f558,ead23930-7001-5f34-a97e-8b598e7f468f,Nova Solutions - Clos Deal 131,Closed Lost,261230.08,2025-08-31,2025-05-09,True,False
+2125a51e-2168-506a-a9cd-7e2256f09445,6f1a347b-5600-5114-8564-83ed882d0163,Catalyst Global - Clos Deal 132,Closed Won,886209.36,2025-02-19,2024-09-26,True,True
+57ae50f3-78da-5721-8265-1813f0d40b04,93ed93c0-b3c1-53d7-99da-cb5b30db5176,Keystone Inc - Nego Deal 133,Negotiation,825857.45,2025-02-08,2024-12-01,False,False
+e48f4e05-414e-5f66-8bb4-a195a8edf443,6ff4aacd-3d77-5cec-ae4b-9b3a82ddf968,Torque Labs - Prop Deal 134,Proposal,1938715.22,2024-10-31,2024-06-22,False,False
+a0529d0d-466e-59b1-b074-9d7461ef996e,bb0fb10c-ffae-584e-9f13-bbb6e995ae47,Velocity Global - Pros Deal 135,Prospecting,663845.52,2025-05-26,2024-12-11,False,False
+c4f32b5b-edf3-5fe1-8c38-a834d384c97d,431a87b0-107c-55eb-ab9a-aa72b7da2ff5,Optima Labs - Clos Deal 136,Closed Lost,1257330.37,2025-08-31,2025-03-30,True,False
+832fa29f-42ea-59a9-ac02-52df4155b061,d8f42658-cb6b-56fd-8968-7ffd84fdc700,Cipher Corp - Pros Deal 137,Prospecting,146157.29,2025-03-02,2024-11-19,False,False
+66cd31b5-60b0-52c7-969b-adaa9883309d,43af5cfe-8214-53c0-8e63-7027e33cae35,Onyx Group - Nego Deal 138,Negotiation,873603.23,2024-04-15,2024-02-20,False,False
+07cd11b2-8f2c-52a3-a196-5e9aef2e1bf3,3497aeaa-3917-5ff2-b35e-1b3b84611d47,Radiant Group - Qual Deal 139,Qualification,605937.5,2024-02-25,2024-01-15,False,False
+9f9ae7e3-044a-5926-a46d-b6505a309130,f5413627-a396-52f8-a62b-92fb5e9e29ca,Apex Labs - Nego Deal 140,Negotiation,593801.87,2024-11-27,2024-07-10,False,False
+18d7f4df-f777-5307-b076-d5131396b2f3,51e2c3bb-b93a-50a4-8d8a-8afaf7010064,Forge Inc - Qual Deal 141,Qualification,829982.98,2025-03-01,2024-12-15,False,False
+5ae1ee48-d7d4-587a-82ac-e3097f95a810,8016ef81-4495-5599-9b2e-0e938626e6c0,Forge Solutions - Qual Deal 142,Qualification,1222888.66,2024-10-13,2024-07-14,False,False
+ea20be5c-2326-5970-99c6-f309d29a19c6,ead23930-7001-5f34-a97e-8b598e7f468f,Nova Solutions - Clos Deal 143,Closed Won,294804.26,2024-11-27,2024-08-24,True,True
+9542c3cb-cef4-5398-9a45-a6ce82ec2792,b8c473f0-7ba8-5939-b4ab-1885153c74f0,Brevity Technologies - Qual Deal 144,Qualification,28700.89,2025-07-14,2025-02-15,False,False
+d03c114d-0b48-5ca5-8eee-c99953a8c1e8,2b91a984-2ed9-59aa-87ca-6d17f67ddcaa,Apex Global - Nego Deal 145,Negotiation,324371.49,2024-12-10,2024-08-14,False,False
+8424168c-a133-558f-9003-8a9375b6d10d,caa223f3-6312-5323-92cb-d5cc27637d4f,Quantum Group - Qual Deal 146,Qualification,1924437.85,2025-03-23,2024-12-19,False,False
+67e52e86-b309-5219-a869-14d3626a773a,b8c473f0-7ba8-5939-b4ab-1885153c74f0,Brevity Technologies - Clos Deal 147,Closed Won,406441.83,2024-12-15,2024-07-15,True,True
+7733b99b-adaa-57fe-9e31-52af1f020a4e,6f1a347b-5600-5114-8564-83ed882d0163,Catalyst Global - Qual Deal 148,Qualification,1148126.16,2025-02-03,2024-10-21,False,False
+df2a4433-0308-5c71-94e2-9477e8e78724,930ee687-98d3-5d1b-af55-52dd2d78e85d,Dynamo Global - Qual Deal 149,Qualification,1956109.52,2025-04-13,2024-12-03,False,False
+ec8b78cb-71bf-550e-84eb-7257ba3a6c87,3ec3dd14-5b73-52b2-8ad6-bddd89ea77cb,Torque Global - Pros Deal 150,Prospecting,1731484.12,2025-03-16,2025-02-02,False,False
+c5894635-347d-5844-b85a-b24cdd62808e,5674b2ac-c8bc-53c1-8ad6-93abf454f3e8,Catalyst Systems - Nego Deal 151,Negotiation,1667349.41,2025-07-19,2025-04-07,False,False
+0b64529d-e331-5820-857f-3259aa582a67,9d931b8f-a58d-505e-8952-2823d83ddbfd,Keystone Global - Nego Deal 152,Negotiation,1218059.35,2024-09-23,2024-06-29,False,False
+2b7ba0a0-31a8-5e57-8cf9-9caf7f20ca7f,aff36888-7617-562e-a51e-5d7dfa1b12e3,Brevity Labs - Qual Deal 153,Qualification,508747.33,2025-03-27,2025-01-21,False,False
+1a56adb3-5906-51fb-ab02-0216138465cb,aff36888-7617-562e-a51e-5d7dfa1b12e3,Brevity Labs - Pros Deal 154,Prospecting,1258641.63,2024-05-09,2024-01-21,False,False
+8ca44f4f-3ae2-5d01-b1e1-e515b1b12323,3497aeaa-3917-5ff2-b35e-1b3b84611d47,Radiant Group - Pros Deal 155,Prospecting,736073.85,2024-04-30,2024-03-08,False,False
+9a3da7d9-8c99-5bdd-810f-c4c0096c0696,2b91a984-2ed9-59aa-87ca-6d17f67ddcaa,Apex Global - Qual Deal 156,Qualification,836851.16,2024-06-14,2024-04-12,False,False
+92cfaa7b-8252-5cc0-9268-95b02b0b8f2d,d8f42658-cb6b-56fd-8968-7ffd84fdc700,Cipher Corp - Clos Deal 157,Closed Won,738056.49,2024-12-21,2024-09-13,True,True
+7859f270-210b-5a07-8a15-d31c1594b73a,8016ef81-4495-5599-9b2e-0e938626e6c0,Forge Solutions - Qual Deal 158,Qualification,1651132.73,2024-12-17,2024-09-03,False,False
+4c5dcd43-5b3c-5e01-920c-b59bdb85f4b1,6af98e85-d092-5f9c-8725-694fc513d603,Lexicon Global - Clos Deal 159,Closed Won,1610422.75,2024-10-15,2024-08-27,True,True
+e45e17cf-346d-5a1b-90c0-6b748c62bfa2,51e2c3bb-b93a-50a4-8d8a-8afaf7010064,Forge Inc - Nego Deal 160,Negotiation,458973.24,2025-04-22,2024-12-12,False,False
+860d961a-3805-5382-a4e8-d224f67c56cc,0e3dfd0c-2e9a-538b-bbd8-213b43bcd12a,Flux Global - Prop Deal 161,Proposal,1583457.12,2024-04-14,2024-01-08,False,False
+b8db6f16-7994-56d7-8fc6-a916ac49dc18,d8f42658-cb6b-56fd-8968-7ffd84fdc700,Cipher Corp - Pros Deal 162,Prospecting,743485.46,2025-04-25,2025-01-18,False,False
+415a6380-1baa-5929-b7d5-4295256b8bbc,caa223f3-6312-5323-92cb-d5cc27637d4f,Quantum Group - Prop Deal 163,Proposal,1280713.04,2024-09-04,2024-07-09,False,False
+4b7dfb8b-33a9-5497-8162-8a1eec0e0438,545c1dad-5209-5352-acf7-a78d8584d7c4,Lumina Inc - Qual Deal 164,Qualification,59799.05,2025-09-17,2025-03-28,False,False
+53729be4-06c3-51c5-a9e2-046f7ddb2c21,f5413627-a396-52f8-a62b-92fb5e9e29ca,Apex Labs - Clos Deal 165,Closed Won,450520.73,2024-06-29,2024-02-02,True,True
+7eae7757-3020-5f74-b6da-5b7f4f04ba48,930ee687-98d3-5d1b-af55-52dd2d78e85d,Dynamo Global - Qual Deal 166,Qualification,822508.75,2024-04-22,2024-03-12,False,False
+380c5166-9a9f-506c-b39c-089e97d4d2ba,46664507-cb3b-5f66-b5f7-1f29b1101e56,Titan Corp - Qual Deal 167,Qualification,990322.99,2024-05-19,2024-02-19,False,False
+095d7326-59dd-526c-ad11-5f032f9be837,d8f42658-cb6b-56fd-8968-7ffd84fdc700,Cipher Corp - Pros Deal 168,Prospecting,912751.08,2025-05-26,2024-12-09,False,False
+c03fae5f-90a3-5409-9922-d2f4466508e8,0b671594-6b81-5fd6-9f6d-c639d134fce6,Pinnacle Corp - Prop Deal 169,Proposal,1455932.31,2025-08-12,2025-03-29,False,False
+611c8da2-265b-5b87-a041-9b43e07b6396,bb0fb10c-ffae-584e-9f13-bbb6e995ae47,Velocity Global - Pros Deal 170,Prospecting,983800.61,2024-11-05,2024-07-27,False,False
+5cbdf872-492f-595a-aa32-3d202b81341d,46664507-cb3b-5f66-b5f7-1f29b1101e56,Titan Corp - Nego Deal 171,Negotiation,442366.67,2024-11-13,2024-08-15,False,False
+0e8b6ccd-b93d-5d68-b31f-5a9d9c35b6c6,23ba5428-0f79-5c2c-8696-8bd81e5fc9ca,Sigma Solutions - Pros Deal 172,Prospecting,1374503.73,2025-02-03,2024-10-05,False,False
+6897ba9f-fc78-5a5d-8781-352e0afac04c,9bcb056f-4064-50eb-9d4a-d49e79408751,Forge Corp - Prop Deal 173,Proposal,387719.04,2024-07-27,2024-03-03,False,False
+6cffb3cb-20be-58d2-b2a1-bbc319ffcd8d,ac4cbf36-6ec9-53c7-8ff1-af0e02b88581,Falcon Global - Nego Deal 174,Negotiation,1286991.89,2024-12-06,2024-11-01,False,False
+d8c577cc-6658-54ad-8f3e-85a306d0bd23,9bcb056f-4064-50eb-9d4a-d49e79408751,Forge Corp - Nego Deal 175,Negotiation,494702.11,2024-08-26,2024-03-05,False,False
+fb090444-c93b-5702-8eba-81f6aff05360,de2efff9-353f-5463-855c-d25c7bdbff64,Zephyr Global - Pros Deal 176,Prospecting,1532663.18,2024-10-13,2024-04-16,False,False
+de26a3ce-aae3-5ed5-ac4d-d701e2402895,de2efff9-353f-5463-855c-d25c7bdbff64,Zephyr Global - Clos Deal 177,Closed Won,473667.37,2025-04-08,2025-01-31,True,True
+e88bd157-5681-5c87-ae2d-34a8f22eea44,5674b2ac-c8bc-53c1-8ad6-93abf454f3e8,Catalyst Systems - Pros Deal 178,Prospecting,1718228.19,2024-05-17,2024-03-15,False,False
+69774cc6-9d87-5b18-add2-a3399294bd96,d8f42658-cb6b-56fd-8968-7ffd84fdc700,Cipher Corp - Qual Deal 179,Qualification,357249.27,2025-01-09,2024-12-04,False,False
+525c782a-30d0-5cbf-a969-5786265dc535,4f672d93-6dc6-5ad5-9ed4-d5aec6b31cd7,Forge Group - Pros Deal 180,Prospecting,1582069.48,2024-10-28,2024-05-01,False,False
+29c237c7-853a-5e4b-abb2-63283dccaf44,f5413627-a396-52f8-a62b-92fb5e9e29ca,Apex Labs - Pros Deal 181,Prospecting,538081.34,2024-07-20,2024-03-05,False,False
+a2bf2d3c-7f66-57cc-9c7a-af3a5325d74e,89dd46ef-249f-59e3-ab22-05fe23b6597a,Apex Inc - Pros Deal 182,Prospecting,136480.5,2024-12-17,2024-08-17,False,False
+cd8db347-0f66-59d5-ac34-4ff0300364ae,6a8e4f20-73a7-5719-970b-7a3dbdc3b2d2,Nova Inc - Prop Deal 183,Proposal,909490.79,2024-06-03,2024-04-23,False,False
+a91cc4b4-1b61-5fdd-9f2e-84762c893c69,a2c18885-9e62-5fff-a76a-5b7ac3f52f3f,Zenith Global - Nego Deal 184,Negotiation,1735292.01,2025-01-08,2024-09-23,False,False
+13eed043-c364-5172-98f8-505b2455f09d,b8c473f0-7ba8-5939-b4ab-1885153c74f0,Brevity Technologies - Nego Deal 185,Negotiation,71989.77,2025-01-12,2024-09-02,False,False
+7ba3242a-993d-51cd-af0a-eddb7d43f00b,48acd5b7-d7fe-5c11-a5f9-2f441c6bc17f,Onyx Solutions - Nego Deal 186,Negotiation,985635.02,2025-08-31,2025-04-10,False,False
+5add0579-3eb5-5079-8718-0996f490cd7e,6ff4aacd-3d77-5cec-ae4b-9b3a82ddf968,Torque Labs - Clos Deal 187,Closed Won,651002.52,2024-05-01,2024-03-16,True,True
+783c38af-ca87-5a9e-85de-9eed744f6b07,4f672d93-6dc6-5ad5-9ed4-d5aec6b31cd7,Forge Group - Qual Deal 188,Qualification,1269822.68,2025-01-28,2024-10-07,False,False
+8f2ec3bf-812b-5cda-a1e3-119675688665,431a87b0-107c-55eb-ab9a-aa72b7da2ff5,Optima Labs - Clos Deal 189,Closed Lost,1065808.11,2025-01-26,2024-08-20,True,False
+43e48ba9-5050-572d-b0fd-081f98334159,5674b2ac-c8bc-53c1-8ad6-93abf454f3e8,Catalyst Systems - Prop Deal 190,Proposal,1588261.23,2024-08-17,2024-02-28,False,False
+a275f84c-9059-5bf5-861d-c7c8afe4006d,a2c18885-9e62-5fff-a76a-5b7ac3f52f3f,Zenith Global - Clos Deal 191,Closed Won,865839.18,2025-06-26,2025-03-30,True,True
+af5eaf3c-8be7-5d7b-ad84-b0b46c3ad252,0b671594-6b81-5fd6-9f6d-c639d134fce6,Pinnacle Corp - Qual Deal 192,Qualification,912462.82,2024-09-23,2024-07-31,False,False
+b4133c23-9bd2-5d34-9cb1-dd8fe31cba72,f5413627-a396-52f8-a62b-92fb5e9e29ca,Apex Labs - Prop Deal 193,Proposal,1333564.65,2024-09-17,2024-07-10,False,False
+e97f4e9f-02c6-5363-8aae-bcbfe09337da,545c1dad-5209-5352-acf7-a78d8584d7c4,Lumina Inc - Clos Deal 194,Closed Won,143595.28,2025-04-21,2025-03-01,True,True
+1178f57f-93ee-552a-91c3-5077022289ac,ac4cbf36-6ec9-53c7-8ff1-af0e02b88581,Falcon Global - Prop Deal 195,Proposal,1491732.05,2024-09-10,2024-07-09,False,False
+4f6be13d-4341-5ec8-aedd-456f607143bb,0e3dfd0c-2e9a-538b-bbd8-213b43bcd12a,Flux Global - Pros Deal 196,Prospecting,1913683.0,2025-02-05,2024-10-14,False,False
+4b137436-3c91-51f3-8700-1623fee61b7d,e1dc51ca-2442-5b0a-bbd1-ff08d07a2b27,Radiant Inc - Pros Deal 197,Prospecting,713660.18,2025-04-23,2024-12-06,False,False
+bad9d498-2a44-54ac-aa4b-385866c980bd,a2c18885-9e62-5fff-a76a-5b7ac3f52f3f,Zenith Global - Pros Deal 198,Prospecting,582382.52,2024-10-06,2024-06-08,False,False
+3d0238e8-665a-508d-a7ca-42904f508d38,6f1a347b-5600-5114-8564-83ed882d0163,Catalyst Global - Prop Deal 199,Proposal,433350.22,2025-05-04,2024-12-02,False,False

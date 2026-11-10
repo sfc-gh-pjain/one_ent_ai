@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="snowflake-source" content="cortex-agent-authored" />
+  <title>Snowflake Semantic / Context Layer Architecture</title>
+  <script type="application/json" id="snowflake-report-metadata">
+  {
+    "generated": "2026-09-03",
+    "intent": "Architecture recommendation for multi-channel semantic/context layer using Snowflake Cortex AI, Semantic Views, Horizon Governance",
+    "sections": [
+      {"id": "executive-summary", "title": "Executive Summary"},
+      {"id": "reference-architecture", "title": "Reference Architecture"},
+      {"id": "component-mapping", "title": "Component Mapping"},
+      {"id": "semantic-views", "title": "Semantic Views"},
+      {"id": "deep-dive", "title": "Architecture Components"},
+      {"id": "external", "title": "External Components"},
+      {"id": "target-state", "title": "Target-State Architecture"},
+      {"id": "next-steps", "title": "Next Steps"},
+      {"id": "summary", "title": "Summary"}
+    ]
+  }
+  </script>
+  <style>
+    :root {
+      --snow-blue: #29B5E8;
+      --snow-dark: #11567F;
+      --snow-navy: #0D2B45;
+      --snow-deep: #091E30;
+      --snow-teal: #1ECAD3;
+      --snow-ice: #F4FBFE;
+      --bg: #ffffff;
+      --text: #1B2B3A;
+      --text-muted: #5A7184;
+      --success: #0DBF73;
+      --success-light: #E6F9F1;
+      --purple: #7C3AED;
+      --purple-light: #EDE9FE;
+      --warning: #F5A623;
+      --warning-light: #FEF5E6;
+      --danger: #E54B4B;
+      --border: #E3EBF0;
+      --shadow: 0 2px 12px rgba(13,43,69,0.07);
+      --radius: 10px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 40px 48px 80px;
+    }
+    h1 { font-size: 36px; font-weight: 800; color: var(--snow-navy); letter-spacing: -1px; margin-bottom: 8px; }
+    h2 { font-size: 24px; font-weight: 700; color: var(--snow-navy); margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--snow-blue); }
+    h3 { font-size: 18px; font-weight: 600; color: var(--snow-dark); margin: 28px 0 12px; }
+    h4 { font-size: 15px; font-weight: 600; color: var(--snow-dark); margin: 20px 0 8px; }
+    p { margin: 10px 0; font-size: 15px; }
+    .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 4px; }
+    .meta { color: var(--text-muted); font-size: 13px; margin-bottom: 32px; }
+    strong { color: var(--snow-navy); }
+    a { color: var(--snow-blue); }
+    ul, ol { margin: 10px 0 10px 24px; font-size: 15px; }
+    li { margin: 4px 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0 24px; }
+    th, td { padding: 10px 14px; text-align: left; border: 1px solid var(--border); }
+    th { background: var(--snow-ice); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--snow-dark); }
+    code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .code-block {
+      background: var(--snow-deep);
+      color: #E8F7FC;
+      padding: 16px 20px;
+      border-radius: 8px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      margin: 14px 0;
+      white-space: pre-wrap;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+    .callout {
+      background: var(--snow-ice);
+      border-left: 4px solid var(--snow-blue);
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+    .callout.success { background: var(--success-light); border-left-color: var(--success); }
+    .callout.warning { background: var(--warning-light); border-left-color: var(--warning); }
+    .callout.purple { background: var(--purple-light); border-left-color: var(--purple); }
+    .key-principle {
+      background: linear-gradient(135deg, var(--snow-navy) 0%, var(--snow-dark) 100%);
+      color: #fff;
+      padding: 24px 28px;
+      border-radius: var(--radius);
+      margin: 24px 0;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .key-principle strong { color: var(--snow-blue); }
+    .arch-svg { max-width: 100%; margin: 24px auto; display: block; }
+    .toc { background: var(--snow-ice); padding: 20px 24px; border-radius: var(--radius); margin: 24px 0; }
+    .toc a { text-decoration: none; color: var(--snow-dark); font-size: 14px; }
+    .toc ol { margin: 8px 0 0 20px; }
+    .toc li { margin: 4px 0; }
+    @media print {
+      body { padding: 24px; font-size: 12px; max-width: 100%; }
+      h1 { font-size: 28px; }
+      h2 { font-size: 20px; margin-top: 32px; }
+      .arch-svg { max-width: 100%; page-break-inside: avoid; }
+      .key-principle { background: #f8f9fa; color: var(--text); border: 2px solid var(--snow-navy); }
+      .key-principle strong { color: var(--snow-navy); }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Snowflake Semantic / Context Layer Architecture</h1>
+<p class="subtitle">Recommended Architecture for Multi-Channel AI and Analytics Consumption</p>
+<p class="meta">Prepared for: Siva (Architecture Review) | September 2026</p>
+
+<div class="toc">
+  <strong>Contents</strong>
+  <ol>
+    <li><a href="#executive-summary">Executive Summary</a></li>
+    <li><a href="#reference-architecture">Reference Architecture (4-Layer Diagram)</a></li>
+    <li><a href="#component-mapping">Component Mapping: Custom Stack to Snowflake</a></li>
+    <li><a href="#semantic-views">Semantic Views: The Universal Context Layer</a></li>
+    <li><a href="#deep-dive">Deep Dive: Architecture Components</a></li>
+    <li><a href="#external">Where External Components Still Make Sense</a></li>
+    <li><a href="#target-state">Target-State Architecture</a></li>
+    <li><a href="#next-steps">Recommended Next Steps</a></li>
+    <li><a href="#summary">Summary: Key Architectural Decisions</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="executive-summary">1. Executive Summary</h2>
+
+<p>Snowflake's position is that the <strong>Semantic View</strong> is the single, governed semantic layer that serves all downstream consumers &mdash; Cortex Agents, Cortex Analyst, custom AI agents, Tableau, Power BI, and any application consuming enterprise data. This eliminates the need to maintain parallel metadata layers across AI and BI workloads.</p>
+
+<div class="key-principle">
+  <strong>Define business logic once</strong> (in Semantic Views), <strong>enforce governance once</strong> (via Horizon), and <strong>consume everywhere</strong> &mdash; whether the consumer is a natural language agent, a SQL-based BI tool, or a custom application.
+</div>
+
+<p>This document addresses each area of your inquiry with Snowflake's recommended architecture, maps your current custom agent components to Snowflake-native equivalents, and identifies where external components still add value.</p>
+
+<!-- ============================================================ -->
+<h2 id="reference-architecture">2. Reference Architecture</h2>
+
+<h3>2.1 Four-Layer Architecture</h3>
+
+<!-- MAIN SVG ARCHITECTURE DIAGRAM -->
+<svg class="arch-svg" viewBox="0 0 960 820" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;width:100%">
+  <defs>
+    <marker id="arrD" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#5A7184"/>
+    </marker>
+    <linearGradient id="gNav" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0D2B45"/>
+      <stop offset="100%" stop-color="#11567F"/>
+    </linearGradient>
+    <linearGradient id="gGov" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0DBF73"/>
+      <stop offset="50%" stop-color="#1ECAD3"/>
+      <stop offset="100%" stop-color="#0DBF73"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ===== LAYER 1: CONSUMPTION ===== -->
+  <rect x="20" y="20" width="920" height="130" rx="12" fill="#F4FBFE" stroke="#29B5E8" stroke-width="2"/>
+  <text x="40" y="46" font-size="11" font-weight="700" fill="#11567F" letter-spacing="1.5">CONSUMPTION LAYER</text>
+
+  <rect x="40" y="58" width="155" height="72" rx="8" fill="#fff" stroke="#29B5E8" stroke-width="1.5"/>
+  <text x="117" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#0D2B45">Snowflake CoWork</text>
+  <text x="117" y="98" text-anchor="middle" font-size="9" fill="#5A7184">Cortex Agents</text>
+  <text x="117" y="112" text-anchor="middle" font-size="9" fill="#5A7184">Cortex Analyst</text>
+  <text x="117" y="124" text-anchor="middle" font-size="8" fill="#29B5E8">Native chat UI</text>
+
+  <rect x="215" y="58" width="155" height="72" rx="8" fill="#fff" stroke="#7C3AED" stroke-width="1.5"/>
+  <text x="292" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#7C3AED">Custom AI Agents</text>
+  <text x="292" y="98" text-anchor="middle" font-size="9" fill="#5A7184">LangChain / Python</text>
+  <text x="292" y="112" text-anchor="middle" font-size="9" fill="#5A7184">REST API integration</text>
+  <text x="292" y="124" text-anchor="middle" font-size="8" fill="#7C3AED">Your framework</text>
+
+  <rect x="390" y="58" width="120" height="72" rx="8" fill="#fff" stroke="#F5A623" stroke-width="1.5"/>
+  <text x="450" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#92400E">Tableau</text>
+  <text x="450" y="98" text-anchor="middle" font-size="9" fill="#5A7184">Live Connection</text>
+  <text x="450" y="112" text-anchor="middle" font-size="9" fill="#5A7184">Direct Query</text>
+
+  <rect x="530" y="58" width="120" height="72" rx="8" fill="#fff" stroke="#F5A623" stroke-width="1.5"/>
+  <text x="590" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#92400E">Power BI</text>
+  <text x="590" y="98" text-anchor="middle" font-size="9" fill="#5A7184">DirectQuery</text>
+  <text x="590" y="112" text-anchor="middle" font-size="9" fill="#5A7184">Import mode</text>
+
+  <rect x="670" y="58" width="120" height="72" rx="8" fill="#fff" stroke="#0DBF73" stroke-width="1.5"/>
+  <text x="730" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#0A7B4E">Streamlit</text>
+  <text x="730" y="98" text-anchor="middle" font-size="9" fill="#5A7184">SiS Apps</text>
+  <text x="730" y="112" text-anchor="middle" font-size="9" fill="#5A7184">Dashboards</text>
+
+  <rect x="810" y="58" width="110" height="72" rx="8" fill="#fff" stroke="#5A7184" stroke-width="1.5"/>
+  <text x="865" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#5A7184">Applications</text>
+  <text x="865" y="98" text-anchor="middle" font-size="9" fill="#5A7184">SQL API</text>
+  <text x="865" y="112" text-anchor="middle" font-size="9" fill="#5A7184">Snowpark</text>
+
+  <!-- Arrows down -->
+  <path d="M 117 130 L 117 170" stroke="#5A7184" stroke-width="1.5" fill="none" marker-end="url(#arrD)"/>
+  <path d="M 292 130 L 292 170" stroke="#5A7184" stroke-width="1.5" fill="none" marker-end="url(#arrD)"/>
+  <path d="M 480 130 L 480 170" stroke="#5A7184" stroke-width="1.5" fill="none" marker-end="url(#arrD)"/>
+  <path d="M 730 130 L 730 170" stroke="#5A7184" stroke-width="1.5" fill="none" marker-end="url(#arrD)"/>
+
+  <!-- ===== LAYER 2: SEMANTIC ===== -->
+  <rect x="20" y="175" width="920" height="160" rx="12" fill="#E8F7FC" stroke="#29B5E8" stroke-width="2.5"/>
+  <text x="40" y="201" font-size="11" font-weight="700" fill="#11567F" letter-spacing="1.5">SEMANTIC LAYER</text>
+  <text x="200" y="201" font-size="10" fill="#5A7184">(Semantic Views + Cortex Analyst)</text>
+
+  <!-- Domain boxes -->
+  <rect x="40" y="215" width="175" height="55" rx="6" fill="#fff" stroke="#29B5E8" stroke-width="1.5"/>
+  <text x="127" y="237" text-anchor="middle" font-size="10" font-weight="600" fill="#11567F">Healthcare Intelligence</text>
+  <text x="127" y="255" text-anchor="middle" font-size="9" fill="#5A7184">5 tables | Rx, HCP, engagement</text>
+
+  <rect x="230" y="215" width="175" height="55" rx="6" fill="#fff" stroke="#7C3AED" stroke-width="1.5"/>
+  <text x="317" y="237" text-anchor="middle" font-size="10" font-weight="600" fill="#7C3AED">CRM Intelligence</text>
+  <text x="317" y="255" text-anchor="middle" font-size="9" fill="#5A7184">5 tables | Pipeline, health score</text>
+
+  <rect x="420" y="215" width="155" height="55" rx="6" fill="#fff" stroke="#0DBF73" stroke-width="1.5"/>
+  <text x="497" y="237" text-anchor="middle" font-size="10" font-weight="600" fill="#0A7B4E">Finance Summary</text>
+  <text x="497" y="255" text-anchor="middle" font-size="9" fill="#5A7184">3 tables | Budget, revenue</text>
+
+  <rect x="590" y="215" width="140" height="55" rx="6" fill="#fff" stroke="#5A7184" stroke-width="1" stroke-dasharray="4"/>
+  <text x="660" y="237" text-anchor="middle" font-size="10" font-weight="600" fill="#5A7184">Domain N...</text>
+  <text x="660" y="255" text-anchor="middle" font-size="9" fill="#5A7184">Independently owned</text>
+
+  <!-- Router -->
+  <rect x="750" y="215" width="170" height="55" rx="6" fill="#0D2B45"/>
+  <text x="835" y="237" text-anchor="middle" font-size="10" font-weight="600" fill="#29B5E8">Domain Router</text>
+  <text x="835" y="255" text-anchor="middle" font-size="9" fill="#1ECAD3">MODEL_ROUTER_SEARCH</text>
+
+  <!-- Bullet points -->
+  <text x="52" y="295" font-size="9" fill="#11567F">Metrics + dimensions + relationships defined once in YAML</text>
+  <text x="400" y="295" font-size="9" fill="#11567F">Governed: inherits Horizon policies on underlying tables</text>
+  <text x="700" y="295" font-size="9" fill="#11567F">Queryable by ALL consumers</text>
+
+  <!-- Callout bar -->
+  <rect x="40" y="305" width="880" height="22" rx="4" fill="#0D2B45"/>
+  <text x="480" y="320" text-anchor="middle" font-size="10" font-weight="600" fill="#29B5E8">One definition, multiple consumption paths &mdash; Cortex Agents, Custom Agents, Tableau, Power BI, Streamlit, APIs</text>
+
+  <!-- Arrow down -->
+  <path d="M 480 335 L 480 365" stroke="#5A7184" stroke-width="1.5" fill="none" marker-end="url(#arrD)"/>
+
+  <!-- ===== LAYER 3: AI SERVICES ===== -->
+  <rect x="20" y="370" width="920" height="155" rx="12" fill="#E0F7FA" stroke="#1ECAD3" stroke-width="2"/>
+  <text x="40" y="396" font-size="11" font-weight="700" fill="#00695C" letter-spacing="1.5">AI SERVICES LAYER</text>
+
+  <rect x="40" y="410" width="140" height="48" rx="6" fill="#fff" stroke="#1ECAD3" stroke-width="1.5"/>
+  <text x="110" y="430" text-anchor="middle" font-size="10" font-weight="600" fill="#00695C">Cortex Agents</text>
+  <text x="110" y="448" text-anchor="middle" font-size="8" fill="#5A7184">Tool orchestration</text>
+
+  <rect x="195" y="410" width="140" height="48" rx="6" fill="#fff" stroke="#1ECAD3" stroke-width="1.5"/>
+  <text x="265" y="430" text-anchor="middle" font-size="10" font-weight="600" fill="#00695C">Cortex Analyst</text>
+  <text x="265" y="448" text-anchor="middle" font-size="8" fill="#5A7184">Text-to-SQL</text>
+
+  <rect x="350" y="410" width="140" height="48" rx="6" fill="#fff" stroke="#1ECAD3" stroke-width="1.5"/>
+  <text x="420" y="430" text-anchor="middle" font-size="10" font-weight="600" fill="#00695C">Cortex Search</text>
+  <text x="420" y="448" text-anchor="middle" font-size="8" fill="#5A7184">Hybrid RAG (vector+BM25)</text>
+
+  <rect x="505" y="410" width="140" height="48" rx="6" fill="#fff" stroke="#1ECAD3" stroke-width="1.5"/>
+  <text x="575" y="430" text-anchor="middle" font-size="10" font-weight="600" fill="#00695C">Cortex Complete</text>
+  <text x="575" y="448" text-anchor="middle" font-size="8" fill="#5A7184">LLM inference</text>
+
+  <rect x="660" y="410" width="130" height="48" rx="6" fill="#fff" stroke="#1ECAD3" stroke-width="1.5"/>
+  <text x="725" y="430" text-anchor="middle" font-size="10" font-weight="600" fill="#00695C">AI Functions</text>
+  <text x="725" y="448" text-anchor="middle" font-size="8" fill="#5A7184">Classify, Extract, ...</text>
+
+  <rect x="805" y="410" width="115" height="48" rx="6" fill="#fff" stroke="#1ECAD3" stroke-width="1.5"/>
+  <text x="862" y="430" text-anchor="middle" font-size="10" font-weight="600" fill="#00695C">ML Registry</text>
+  <text x="862" y="448" text-anchor="middle" font-size="8" fill="#5A7184">Custom models</text>
+
+  <!-- Replaces row -->
+  <rect x="40" y="470" width="880" height="42" rx="6" fill="rgba(0,105,92,0.08)"/>
+  <text x="52" y="488" font-size="9" font-weight="600" fill="#00695C">Replaces:</text>
+  <text x="115" y="488" font-size="9" fill="#5A7184">External LLM hosting</text>
+  <text x="270" y="488" font-size="9" fill="#5A7184">Vector database (Pinecone, Weaviate)</text>
+  <text x="510" y="488" font-size="9" fill="#5A7184">Custom embedding pipeline</text>
+  <text x="720" y="488" font-size="9" fill="#5A7184">RAG orchestration</text>
+  <text x="52" y="504" font-size="9" font-weight="600" fill="#00695C">Access:</text>
+  <text x="105" y="504" font-size="9" fill="#5A7184">REST API (/api/v2/cortex/...) + SQL functions (SNOWFLAKE.CORTEX.*) + Agent tool specs</text>
+
+  <!-- Arrow down -->
+  <path d="M 480 525 L 480 555" stroke="#5A7184" stroke-width="1.5" fill="none" marker-end="url(#arrD)"/>
+
+  <!-- ===== LAYER 4: DATA ===== -->
+  <rect x="20" y="560" width="920" height="110" rx="12" fill="#fff" stroke="#0D2B45" stroke-width="2"/>
+  <text x="40" y="586" font-size="11" font-weight="700" fill="#0D2B45" letter-spacing="1.5">DATA LAYER</text>
+
+  <rect x="40" y="600" width="200" height="55" rx="6" fill="#E8F7FC" stroke="#29B5E8" stroke-width="1"/>
+  <text x="140" y="622" text-anchor="middle" font-size="10" font-weight="600" fill="#11567F">Structured</text>
+  <text x="140" y="640" text-anchor="middle" font-size="9" fill="#5A7184">Tables, Iceberg, Dynamic Tables</text>
+
+  <rect x="260" y="600" width="200" height="55" rx="6" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1"/>
+  <text x="360" y="622" text-anchor="middle" font-size="10" font-weight="600" fill="#7C3AED">Unstructured</text>
+  <text x="360" y="640" text-anchor="middle" font-size="9" fill="#5A7184">Stages, PDFs, images, docs</text>
+
+  <rect x="480" y="600" width="200" height="55" rx="6" fill="#E6F9F1" stroke="#0DBF73" stroke-width="1"/>
+  <text x="580" y="622" text-anchor="middle" font-size="10" font-weight="600" fill="#0A7B4E">Streaming</text>
+  <text x="580" y="640" text-anchor="middle" font-size="9" fill="#5A7184">Snowpipe Streaming SDK</text>
+
+  <rect x="700" y="600" width="220" height="55" rx="6" fill="#FEF5E6" stroke="#F5A623" stroke-width="1"/>
+  <text x="810" y="622" text-anchor="middle" font-size="10" font-weight="600" fill="#92400E">Metadata</text>
+  <text x="810" y="640" text-anchor="middle" font-size="9" fill="#5A7184">INFORMATION_SCHEMA, ACCOUNT_USAGE, tags</text>
+
+  <!-- Arrow down -->
+  <path d="M 480 670 L 480 700" stroke="#5A7184" stroke-width="1.5" fill="none" marker-end="url(#arrD)"/>
+
+  <!-- ===== GOVERNANCE BAR ===== -->
+  <rect x="20" y="705" width="920" height="95" rx="12" fill="url(#gNav)"/>
+  <rect x="20" y="795" width="920" height="5" rx="2" fill="url(#gGov)"/>
+  <text x="40" y="731" font-size="11" font-weight="700" fill="#29B5E8" letter-spacing="1.5">GOVERNANCE LAYER (Horizon)</text>
+
+  <rect x="40" y="742" width="125" height="28" rx="5" fill="rgba(41,181,232,0.15)"/>
+  <text x="102" y="760" text-anchor="middle" font-size="9" fill="#1ECAD3">Tags</text>
+
+  <rect x="175" y="742" width="125" height="28" rx="5" fill="rgba(41,181,232,0.15)"/>
+  <text x="237" y="760" text-anchor="middle" font-size="9" fill="#1ECAD3">Masking Policies</text>
+
+  <rect x="310" y="742" width="125" height="28" rx="5" fill="rgba(41,181,232,0.15)"/>
+  <text x="372" y="760" text-anchor="middle" font-size="9" fill="#1ECAD3">Row Access</text>
+
+  <rect x="445" y="742" width="125" height="28" rx="5" fill="rgba(41,181,232,0.15)"/>
+  <text x="507" y="760" text-anchor="middle" font-size="9" fill="#1ECAD3">Classification</text>
+
+  <rect x="580" y="742" width="100" height="28" rx="5" fill="rgba(41,181,232,0.15)"/>
+  <text x="630" y="760" text-anchor="middle" font-size="9" fill="#1ECAD3">Lineage</text>
+
+  <rect x="690" y="742" width="70" height="28" rx="5" fill="rgba(41,181,232,0.15)"/>
+  <text x="725" y="760" text-anchor="middle" font-size="9" fill="#1ECAD3">RBAC</text>
+
+  <rect x="770" y="742" width="70" height="28" rx="5" fill="rgba(41,181,232,0.15)"/>
+  <text x="805" y="760" text-anchor="middle" font-size="9" fill="#1ECAD3">Audit</text>
+
+  <rect x="850" y="742" width="70" height="28" rx="5" fill="rgba(41,181,232,0.15)"/>
+  <text x="885" y="760" text-anchor="middle" font-size="9" fill="#1ECAD3">DQ / DMFs</text>
+
+  <text x="480" y="790" text-anchor="middle" font-size="10" font-weight="600" fill="rgba(255,255,255,0.7)">Applied uniformly across ALL access paths &mdash; same policies for AI agents, BI tools, and applications</text>
+</svg>
+
+<h3>2.2 How Each Consumer Accesses the Semantic Layer</h3>
+
+<table>
+  <thead><tr><th>Consumer</th><th>Access Method</th><th>Semantic Layer Usage</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Cortex Agents (CoWork)</strong></td><td>Agent calls <code>cortex_analyst_text_to_sql</code> tool</td><td>Agent receives natural language, Cortex Analyst uses Semantic View to generate SQL</td></tr>
+    <tr><td><strong>Cortex Analyst (direct)</strong></td><td>CoWork UI or REST API</td><td>User queries Semantic View directly via natural language</td></tr>
+    <tr><td><strong>Custom AI Agents</strong></td><td>REST API (<code>/api/v2/cortex/analyst/message</code>)</td><td>Custom agent sends question + semantic view reference, gets SQL + results</td></tr>
+    <tr><td><strong>Tableau</strong></td><td>Direct SQL query or Live Connection</td><td>Queries governed tables; Semantic View definitions inform calculated fields</td></tr>
+    <tr><td><strong>Power BI</strong></td><td>Direct SQL query or DirectQuery</td><td>Same as Tableau &mdash; governed tables, metrics from Semantic View</td></tr>
+    <tr><td><strong>Applications</strong></td><td>SQL API or Snowpark</td><td>Query governed tables; Semantic Views as metric catalog</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="component-mapping">3. Component Mapping: Custom Stack to Snowflake</h2>
+
+<p>Your current custom agent architecture:</p>
+<div class="code-block">LLM/Agent Framework &rarr; Vector Database &rarr; Knowledge Graph &rarr; RDS/Metadata &rarr; Observability &rarr; Enterprise Data</div>
+
+<p>Snowflake-native equivalent for each component:</p>
+
+<table>
+  <thead><tr><th>Custom Component</th><th>Snowflake Equivalent</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td><strong>LLM / Agent Framework</strong></td><td><strong>Cortex Agents + Cortex Complete</strong></td><td>Cortex Agents orchestrate tools natively. For custom frameworks, call Cortex Complete via REST API.</td></tr>
+    <tr><td><strong>Vector Database</strong></td><td><strong>Cortex Search</strong></td><td>Hybrid search (vector + keyword + reranker). Auto-embeds. Incremental refresh.</td></tr>
+    <tr><td><strong>Knowledge Graph</strong></td><td><strong>Semantic View relationships + Tags + Cortex Search</strong></td><td>Entity relationships in Semantic Views. Tags for classification. Search for discovery.</td></tr>
+    <tr><td><strong>RDS / Metadata Stores</strong></td><td><strong>Snowflake tables + INFORMATION_SCHEMA + ACCOUNT_USAGE</strong></td><td>All metadata native. Tag references, policy references, lineage &mdash; all queryable via SQL.</td></tr>
+    <tr><td><strong>Observability</strong></td><td><strong>Event Tables + Query History + Agent Tracing</strong></td><td>Query-level and access-level tracing native. Prompt-level debugging may need external tool.</td></tr>
+    <tr><td><strong>Enterprise Data</strong></td><td><strong>Snowflake tables</strong></td><td>Single copy. No ETL to external stores.</td></tr>
+  </tbody>
+</table>
+
+<h3>3.1 What This Consolidation Eliminates</h3>
+
+<table>
+  <thead><tr><th>Eliminated Component</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>External vector database</td><td>Cortex Search provides hybrid vector + keyword search natively</td></tr>
+    <tr><td>ETL to vector store</td><td>Cortex Search has incremental refresh from source tables</td></tr>
+    <tr><td>Separate metadata store</td><td>INFORMATION_SCHEMA + ACCOUNT_USAGE + tags are the metadata store</td></tr>
+    <tr><td>External LLM hosting</td><td>Cortex Complete runs models on Snowflake infrastructure</td></tr>
+    <tr><td>Separate governance layer</td><td>Horizon policies apply to all access paths (AI and BI)</td></tr>
+    <tr><td>Custom embedding pipeline</td><td>Cortex Search auto-embeds; <code>AI_EMBED</code> for custom needs</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="semantic-views">4. Semantic Views: The Universal Context Layer</h2>
+
+<h3>4.1 What is a Semantic View</h3>
+<p>A Semantic View is a Snowflake-native object that defines:</p>
+<ul>
+  <li><strong>Tables and joins</strong>: which physical tables participate and how they relate</li>
+  <li><strong>Dimensions</strong>: categorical columns for grouping/filtering</li>
+  <li><strong>Measures</strong>: numeric columns for aggregation</li>
+  <li><strong>Metrics</strong>: pre-defined business calculations with SQL expressions</li>
+  <li><strong>Relationships</strong>: join paths between tables</li>
+</ul>
+<p>It is NOT a SQL view &mdash; it is a metadata definition that Cortex Analyst uses to generate accurate SQL from natural language questions.</p>
+
+<h3>4.2 Why Semantic Views Are the Right Semantic Layer</h3>
+
+<table>
+  <thead><tr><th>Requirement</th><th>How Semantic Views Address It</th></tr></thead>
+  <tbody>
+    <tr><td>Single definition of business metrics</td><td>Metrics defined once in YAML, consumed by all channels</td></tr>
+    <tr><td>Governed access</td><td>Inherits Horizon policies (masking, row access) on underlying tables</td></tr>
+    <tr><td>Multi-domain scalability</td><td>One Semantic View per domain (10-50 tables each), independently owned</td></tr>
+    <tr><td>AI consumption</td><td>Cortex Agents use Semantic Views via <code>cortex_analyst_text_to_sql</code> tool</td></tr>
+    <tr><td>BI consumption</td><td>Tableau/Power BI query governed tables; metric definitions serve as catalog</td></tr>
+    <tr><td>Custom agent consumption</td><td>REST API: <code>POST /api/v2/cortex/analyst/message</code> with <code>semantic_view</code> parameter</td></tr>
+    <tr><td>Versioning</td><td>Snowflake objects with DDL lifecycle (CREATE, ALTER, DROP)</td></tr>
+  </tbody>
+</table>
+
+<h3>4.3 Multi-Domain Routing Pattern</h3>
+<p>For enterprises with many data domains (500+ tables across 20+ business units):</p>
+
+<div class="callout">
+  <strong>Pattern:</strong> Each domain team owns their Semantic View independently. A <code>SEMANTIC_MODEL_REGISTRY</code> table catalogs all domains. <code>MODEL_ROUTER_SEARCH</code> (Cortex Search) indexes the registry. The Enterprise Agent uses the router to identify which domain can answer a question, then calls the appropriate analyst tool. This scales to any number of domains without a monolithic model.
+</div>
+
+<h3>4.4 Reuse Across All Consumers</h3>
+
+<h4>Cortex Agents (YAML spec)</h4>
+<div class="code-block">tools:
+  - tool_spec:
+      type: cortex_analyst_text_to_sql
+      name: pharma_analyst
+tool_resources:
+  cortex_analyst_text_to_sql:
+    pharma_analyst:
+      semantic_view: DEMO.HEALTHCARE_DEMO.PHARMA_COMMERCIAL_INTELLIGENCE</div>
+
+<h4>Custom Agents (Python / LangChain)</h4>
+<div class="code-block">response = requests.post(
+    f"{account_url}/api/v2/cortex/analyst/message",
+    headers={"Authorization": f"Bearer {pat}", ...},
+    json={
+        "messages": [{"role": "user", "content": [{"type": "text", "text": question}]}],
+        "semantic_view": "DEMO.HEALTHCARE_DEMO.PHARMA_COMMERCIAL_INTELLIGENCE"
+    }
+)
+# Returns: generated SQL + results</div>
+
+<h4>Tableau / Power BI</h4>
+<p>Connect directly to Snowflake via native connector. Query governed underlying tables. Use Semantic View metric definitions as reference catalog for calculated fields. Same Horizon policies apply automatically.</p>
+
+<!-- ============================================================ -->
+<h2 id="deep-dive">5. Deep Dive: Architecture Components</h2>
+
+<h3>5.1 Structured Data Grounding (Cortex Analyst + Semantic Views)</h3>
+<p><strong>Problem:</strong> AI agents need to answer questions about structured enterprise data with SQL accuracy.</p>
+<p><strong>Solution:</strong> Cortex Analyst converts natural language to SQL using Semantic View definitions as context.</p>
+<p><strong>Quality Controls:</strong> Verified Queries (VQRs) for pre-validated question-SQL pairs. Metric expressions use exact SQL, not LLM-interpreted. Automated evaluation of SQL generation accuracy.</p>
+
+<h3>5.2 Unstructured Data Grounding (Cortex Search / RAG)</h3>
+<p><strong>Problem:</strong> Agents need to answer questions using unstructured documents and free-text data.</p>
+<p><strong>Solution:</strong> Cortex Search provides hybrid retrieval (vector + keyword + reranker) over text data in Snowflake tables.</p>
+<ul>
+  <li><strong>Hybrid search</strong>: dense vector similarity + BM25 keyword + cross-encoder reranker</li>
+  <li><strong>Auto-embedding</strong>: <code>snowflake-arctic-embed</code> &mdash; no external pipeline</li>
+  <li><strong>Incremental refresh</strong>: <code>TARGET_LAG</code> controls freshness</li>
+  <li><strong>Attribute columns</strong>: structured metadata returned with search results</li>
+</ul>
+
+<h3>5.3 Vector Search / RAG Comparison</h3>
+
+<table>
+  <thead><tr><th>Capability</th><th>External Vector DB</th><th>Cortex Search</th></tr></thead>
+  <tbody>
+    <tr><td>Embedding</td><td>Manual pipeline (embed &rarr; upsert)</td><td>Automatic (specify text column)</td></tr>
+    <tr><td>Refresh</td><td>Manual re-indexing</td><td>Incremental (TARGET_LAG)</td></tr>
+    <tr><td>Hybrid search</td><td>Usually vector-only</td><td>Native: vector + keyword + reranker</td></tr>
+    <tr><td>Governance</td><td>Separate ACLs</td><td>Inherits Snowflake RBAC</td></tr>
+    <tr><td>Scaling</td><td>Manage infrastructure</td><td>Serverless, auto-scales</td></tr>
+    <tr><td>Data movement</td><td>ETL to external store</td><td>Zero &mdash; data stays in Snowflake</td></tr>
+  </tbody>
+</table>
+
+<h3>5.4 Knowledge Graph Alternatives</h3>
+
+<table>
+  <thead><tr><th>Knowledge Graph Use Case</th><th>Snowflake Alternative</th></tr></thead>
+  <tbody>
+    <tr><td>Entity relationships</td><td><strong>Semantic View relationships</strong> &mdash; declarative join paths</td></tr>
+    <tr><td>Entity classification</td><td><strong>Horizon Tags</strong> &mdash; DATA_CLASSIFICATION, PII_LEVEL, etc.</td></tr>
+    <tr><td>Entity discovery</td><td><strong>Cortex Search</strong> &mdash; natural language search over metadata</td></tr>
+    <tr><td>Lineage / provenance</td><td><strong>GET_LINEAGE</strong> &mdash; column-level lineage</td></tr>
+    <tr><td>Metadata navigation</td><td><strong>INFORMATION_SCHEMA + ACCOUNT_USAGE</strong></td></tr>
+    <tr><td>Tag-based traversal</td><td><strong>TAG_REFERENCES</strong> view</td></tr>
+  </tbody>
+</table>
+
+<div class="callout warning">
+  <strong>When you still need a graph database:</strong> Complex multi-hop traversals (fraud rings, social networks), real-time graph algorithms (PageRank, community detection), or pre-existing deeply graph-native ontologies.
+</div>
+
+<h3>5.5 Agent Orchestration</h3>
+
+<table>
+  <thead><tr><th>Criteria</th><th>Use Cortex Agents</th><th>Use Custom Framework</th></tr></thead>
+  <tbody>
+    <tr><td>Standard Q&amp;A over enterprise data</td><td>Yes</td><td>Overkill</td></tr>
+    <tr><td>Multi-domain routing</td><td>Yes (via Cortex Search)</td><td>Yes</td></tr>
+    <tr><td>Complex multi-step chains</td><td>Limited</td><td>Yes</td></tr>
+    <tr><td>External tool calls (APIs, databases)</td><td>Not yet</td><td>Yes</td></tr>
+    <tr><td>Custom memory/context management</td><td>Not yet</td><td>Yes</td></tr>
+    <tr><td>Governance (same RBAC)</td><td>Automatic</td><td>Must configure per API call</td></tr>
+    <tr><td>Deployment complexity</td><td>Zero (declarative YAML)</td><td>Infrastructure to manage</td></tr>
+  </tbody>
+</table>
+
+<h3>5.6 Metadata and Governance</h3>
+
+<table>
+  <thead><tr><th>Governance Capability</th><th>How It Works</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Object Tagging</strong></td><td>8+ tag types applied to tables/columns</td></tr>
+    <tr><td><strong>Dynamic Masking</strong></td><td>Tag-driven: PII_LEVEL=HIGH columns masked for non-privileged roles</td></tr>
+    <tr><td><strong>Row Access Policies</strong></td><td>Role-based row filtering &mdash; same policy for agents and BI</td></tr>
+    <tr><td><strong>Column Projection</strong></td><td>Hide sensitive columns from restricted roles</td></tr>
+    <tr><td><strong>Aggregation Policies</strong></td><td>Prevent small-group re-identification</td></tr>
+    <tr><td><strong>Join Policies</strong></td><td>Control which tables can be joined</td></tr>
+    <tr><td><strong>Data Classification</strong></td><td>Automatic PII/PHI detection via <code>SYSTEM$CLASSIFY</code></td></tr>
+    <tr><td><strong>Lineage</strong></td><td>Column-level via <code>GET_LINEAGE</code></td></tr>
+    <tr><td><strong>Audit</strong></td><td><code>QUERY_HISTORY</code>, <code>ACCESS_HISTORY</code>, <code>LOGIN_HISTORY</code></td></tr>
+  </tbody>
+</table>
+
+<div class="key-principle">
+  <strong>Critical principle:</strong> Governance follows the data, not the consumer. A Cortex Agent, a custom Python agent, a Tableau dashboard, and a Power BI report all see the same masked/filtered data based on the executing role's privileges. No separate governance configuration per channel.
+</div>
+
+<h3>5.7 Agent Tracing / Observability</h3>
+
+<table>
+  <thead><tr><th>Capability</th><th>Snowflake Feature</th><th>What It Captures</th></tr></thead>
+  <tbody>
+    <tr><td>Query logging</td><td><code>QUERY_HISTORY</code></td><td>Every SQL generated by Cortex Analyst</td></tr>
+    <tr><td>Agent invocations</td><td><code>QUERY_HISTORY</code></td><td>Agent REST API calls and tool invocations</td></tr>
+    <tr><td>Event tables</td><td><code>ALTER DATABASE SET EVENT_TABLE</code></td><td>Custom log/trace events</td></tr>
+    <tr><td>Access audit</td><td><code>ACCESS_HISTORY</code></td><td>Which columns/tables accessed, by whom</td></tr>
+    <tr><td>Cost attribution</td><td><code>QUERY_ATTRIBUTION_HISTORY</code></td><td>Credit usage per query</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Recommendation:</strong> Start with Snowflake-native observability (query history + event tables). Add external agent observability (Langfuse, LangSmith) only if you need prompt-level debugging or A/B evaluation at scale.</p>
+
+<!-- ============================================================ -->
+<h2 id="external">6. Where External Components Still Make Sense</h2>
+
+<table>
+  <thead><tr><th>Area</th><th>When External Makes Sense</th><th>Snowflake Alternative</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Agent framework</strong></td><td>Complex multi-step chains, external APIs, custom memory</td><td>Cortex Agents (for standard patterns)</td></tr>
+    <tr><td><strong>Graph database</strong></td><td>Multi-hop graph algorithms, fraud ring detection</td><td>Semantic View relationships + Snowpark graph libs</td></tr>
+    <tr><td><strong>Agent observability</strong></td><td>Prompt-level debugging, A/B evaluation</td><td>Query History + Event Tables</td></tr>
+    <tr><td><strong>Real-time vector serving</strong></td><td>Sub-10ms latency for production serving</td><td>Cortex Search (analytical latency)</td></tr>
+    <tr><td><strong>Specialized embeddings</strong></td><td>Domain-specific fine-tuned models</td><td>AI_EMBED with standard models</td></tr>
+    <tr><td><strong>Orchestration</strong></td><td>Complex DAGs with external system deps</td><td>Snowflake Tasks; Airflow for hybrid</td></tr>
+  </tbody>
+</table>
+
+<div class="callout purple">
+  <strong>Honest assessment:</strong> Snowflake eliminates ~80% of the custom agent stack. The remaining 20% (complex orchestration, specialized graph algorithms, prompt-level observability) may still benefit from external tools &mdash; but they should consume data FROM Snowflake rather than maintaining separate copies.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="target-state">7. Target-State Architecture</h2>
+
+<p>The 4-layer architecture diagram above (Section 2.1) represents the recommended target state. The key design principles:</p>
+
+<ol>
+  <li><strong>Semantic Views as the single source of truth</strong> for business metrics and relationships</li>
+  <li><strong>Cortex AI services as the intelligence layer</strong> &mdash; agents, analyst, search, complete</li>
+  <li><strong>Snowflake as the single data platform</strong> &mdash; structured, unstructured, streaming, metadata</li>
+  <li><strong>Horizon as the universal governance layer</strong> &mdash; policies follow data, not consumers</li>
+</ol>
+
+<!-- ============================================================ -->
+<h2 id="next-steps">8. Recommended Next Steps</h2>
+
+<ol>
+  <li><strong>Start with Semantic Views</strong> &mdash; define 2-3 domain Semantic Views over your highest-value datasets. This is the foundation for both AI and BI consumption.</li>
+  <li><strong>Deploy a Cortex Agent</strong> &mdash; create a single-domain agent with one <code>cortex_analyst_text_to_sql</code> tool pointing at a Semantic View. Test in CoWork.</li>
+  <li><strong>Add Cortex Search</strong> &mdash; index unstructured data for RAG. Add as a tool to the agent.</li>
+  <li><strong>Layer in Governance</strong> &mdash; apply Horizon tags and policies. Verify same governance applies regardless of access path.</li>
+  <li><strong>Scale to multi-domain</strong> &mdash; more Semantic Views, domain registry, Enterprise Agent with routing.</li>
+  <li><strong>Evaluate custom agent needs</strong> &mdash; if Cortex Agents don't cover your orchestration requirements, use your existing framework but replace the data grounding layer with Snowflake-native services.</li>
+  <li><strong>Build observability</strong> &mdash; start with query history + event tables. Add external agent observability only if needed.</li>
+</ol>
+
+<!-- ============================================================ -->
+<h2 id="summary">9. Summary: Key Architectural Decisions</h2>
+
+<table>
+  <thead><tr><th>Decision</th><th>Recommendation</th></tr></thead>
+  <tbody>
+    <tr><td>Semantic layer</td><td><strong>Semantic Views</strong> &mdash; single definition, multi-channel consumption</td></tr>
+    <tr><td>Structured data grounding</td><td><strong>Cortex Analyst</strong> via Semantic Views</td></tr>
+    <tr><td>Unstructured data grounding</td><td><strong>Cortex Search</strong> (hybrid RAG, auto-embedding)</td></tr>
+    <tr><td>Agent orchestration</td><td><strong>Cortex Agents</strong> for standard; custom framework for complex chains</td></tr>
+    <tr><td>Knowledge graph</td><td><strong>Semantic View relationships + Tags + Search</strong>; external graph DB for complex algorithms only</td></tr>
+    <tr><td>Governance</td><td><strong>Horizon</strong> &mdash; tag-driven policies applied universally</td></tr>
+    <tr><td>Observability</td><td><strong>Query History + Event Tables</strong> natively; external for prompt-level debugging</td></tr>
+    <tr><td>BI integration</td><td><strong>Direct query</strong> from Tableau/Power BI to governed tables</td></tr>
+    <tr><td>Vector search</td><td><strong>Cortex Search</strong> &mdash; eliminates external vector DB for most use cases</td></tr>
+    <tr><td>Data movement</td><td><strong>Zero</strong> &mdash; all computation on Snowflake, no ETL to external stores</td></tr>
+  </tbody>
+</table>
+
+<hr>
+<p style="font-size:12px;color:var(--text-muted);margin-top:32px"><em>This document represents Snowflake's recommended architecture based on current platform capabilities (September 2026). Specific features and availability may vary by account and region.</em></p>
+
+</body>
+</html>

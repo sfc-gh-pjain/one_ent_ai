@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="snowflake-source" content="cortex-agent-authored" />
+  <title>Snowflake Horizon Catalog Demo</title>
+  <script type="application/json" id="snowflake-report-metadata">
+  {
+    "generated": "2026-08-12",
+    "intent": "Presentation deck for Snowflake Horizon Catalog demo covering governance, lineage, quality, metadata, and AI context",
+    "sections": [
+      { "id": "slide-1", "title": "The Challenge", "dataSources": [], "producerNotes": "Static content" },
+      { "id": "slide-2", "title": "Dataset and Medallion", "dataSources": [{"type": "query", "sql": "SELECT table_name, row_count FROM information_schema.tables WHERE table_schema='HEALTHCARE'"}], "producerNotes": "Row counts" },
+      { "id": "slide-3", "title": "Architecture", "dataSources": [], "producerNotes": "SVG diagram" },
+      { "id": "slide-4", "title": "Governance Policies", "dataSources": [], "producerNotes": "Policy descriptions" },
+      { "id": "slide-5", "title": "Lineage and Quality", "dataSources": [{"type": "query", "sql": "SELECT * FROM TABLE(SNOWFLAKE.CORE.GET_LINEAGE('HORIZON_DEMO_DB.HEALTHCARE.PATIENTS','TABLE','DOWNSTREAM',5))"}], "producerNotes": "Lineage" },
+      { "id": "slide-6", "title": "Metadata Layer", "dataSources": [{"type": "query", "sql": "SELECT * FROM PIPELINE_EXECUTION_LOG ORDER BY execution_start DESC"}], "producerNotes": "Pipeline log" },
+      { "id": "slide-7", "title": "AI Context Integration", "dataSources": [], "producerNotes": "AI service integration patterns" },
+      { "id": "slide-8", "title": "Takeaways", "dataSources": [], "producerNotes": "Summary" }
+    ]
+  }
+  </script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #ffffff;
+      color: #1e293b;
+      line-height: 1.5;
+    }
+    .slide {
+      min-height: 100vh;
+      padding: 60px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-bottom: 1px solid #e2e8f0;
+      position: relative;
+    }
+    .slide-number {
+      position: absolute;
+      top: 24px;
+      right: 40px;
+      font-size: 14px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    h1 { font-size: 48px; font-weight: 700; color: #0f172a; margin-bottom: 16px; letter-spacing: -0.5px; }
+    h2 { font-size: 36px; font-weight: 700; color: #1e40af; margin-bottom: 24px; letter-spacing: -0.3px; }
+    h3 { font-size: 20px; font-weight: 600; color: #334155; margin-bottom: 12px; }
+    p, li { font-size: 18px; color: #475569; margin-bottom: 12px; }
+    .subtitle { font-size: 24px; color: #64748b; margin-bottom: 32px; }
+    .badge { display: inline-block; background: #eff6ff; color: #1d4ed8; padding: 4px 12px; border-radius: 16px; font-size: 14px; font-weight: 500; margin-right: 8px; margin-bottom: 8px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 16px; }
+    th { background: #f1f5f9; color: #1e293b; font-weight: 600; padding: 12px 16px; text-align: left; border-bottom: 2px solid #cbd5e1; }
+    td { padding: 10px 16px; border-bottom: 1px solid #e2e8f0; color: #475569; }
+    tr:hover td { background: #f8fafc; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; }
+    .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; }
+    .card h3 { color: #1e40af; margin-bottom: 8px; }
+    .highlight { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+    .highlight p { margin: 0; color: #1e40af; font-weight: 500; }
+    ul { padding-left: 24px; margin: 12px 0; }
+    li { margin-bottom: 8px; }
+    .arch-container { display: flex; justify-content: center; margin: 20px 0; }
+    .tag-high { background: #fef2f2; color: #dc2626; }
+    .tag-med { background: #fffbeb; color: #d97706; }
+    .tag-low { background: #f0fdf4; color: #16a34a; }
+    .tag-purple { background: #faf5ff; color: #7c3aed; }
+    .stat { text-align: center; padding: 20px; }
+    .stat-number { font-size: 42px; font-weight: 700; color: #1e40af; }
+    .stat-label { font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+    code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'SF Mono', Consolas, monospace; font-size: 15px; color: #7c3aed; }
+  </style>
+</head>
+<body>
+
+  <!-- SLIDE 1: Title -->
+  <section class="slide" id="slide-1">
+    <span class="slide-number">1 / 8</span>
+    <h1>Snowflake Horizon Catalog</h1>
+    <p class="subtitle">Healthcare Data Governance, Metadata & AI Context</p>
+    <div style="margin-top: 24px;">
+      <span class="badge">Object Tagging</span>
+      <span class="badge">Medallion Layers</span>
+      <span class="badge">Data Masking</span>
+      <span class="badge">Row Access</span>
+      <span class="badge">Aggregation</span>
+      <span class="badge">Join Policy</span>
+      <span class="badge">Projection</span>
+      <span class="badge">Lineage</span>
+      <span class="badge">Data Quality</span>
+      <span class="badge">Pipeline Metadata</span>
+      <span class="badge">Cortex Agent</span>
+      <span class="badge">Cortex Search</span>
+    </div>
+    <div class="highlight" style="margin-top: 40px;">
+      <p>Governance metadata (tags, lineage, quality, pipeline execution) unified into a single catalog that Snowflake AI services consume natively.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 2: Dataset -->
+  <section class="slide" id="slide-2">
+    <span class="slide-number">2 / 8</span>
+    <h2>Dataset & Medallion Architecture</h2>
+    <p>Synthetic healthcare system: <strong>155,200 records</strong> across bronze/silver/gold layers</p>
+    <table>
+      <thead>
+        <tr><th>Table</th><th>Records</th><th>Layer</th><th>Classification</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>PATIENTS</code></td><td>10,000</td><td><span class="badge">BRONZE</span></td><td><span class="badge tag-high">PHI</span></td></tr>
+        <tr><td><code>APPOINTMENTS</code></td><td>50,000</td><td><span class="badge">BRONZE</span></td><td><span class="badge tag-high">PHI</span></td></tr>
+        <tr><td><code>BILLING</code></td><td>40,000</td><td><span class="badge">BRONZE</span></td><td><span class="badge tag-med">FINANCIAL</span></td></tr>
+        <tr><td><code>STG_PATIENTS / STG_BILLING / STG_APPTS</code></td><td>(views)</td><td><span class="badge tag-low">SILVER</span></td><td>Inherited</td></tr>
+        <tr><td><code>PATIENT_ANALYTICS</code> (Dynamic Table)</td><td>10,000</td><td><span class="badge tag-purple">GOLD</span></td><td>Aggregated</td></tr>
+        <tr><td><code>REVENUE_DASHBOARD / DEPT_METRICS</code></td><td>(secure views)</td><td><span class="badge tag-purple">GOLD</span></td><td>Shareable</td></tr>
+      </tbody>
+    </table>
+    <div class="two-col" style="margin-top: 16px;">
+      <div class="stat"><div class="stat-number">8</div><div class="stat-label">Tags Applied</div></div>
+      <div class="stat"><div class="stat-number">5</div><div class="stat-label">Policy Types</div></div>
+      <div class="stat"><div class="stat-number">9</div><div class="stat-label">DMFs Attached</div></div>
+      <div class="stat"><div class="stat-number">3</div><div class="stat-label">AI Tools</div></div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: Architecture -->
+  <section class="slide" id="slide-3">
+    <span class="slide-number">3 / 8</span>
+    <h2>Architecture</h2>
+    <div class="arch-container">
+      <svg width="820" height="620" viewBox="0 0 820 620" xmlns="http://www.w3.org/2000/svg">
+        <rect width="820" height="620" fill="#ffffff" rx="8"/>
+
+        <!-- Governance Layer -->
+        <rect x="30" y="10" width="760" height="65" rx="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+        <text x="410" y="35" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="13" font-weight="600" fill="#1e40af">GOVERNANCE + METADATA LAYER</text>
+        <text x="410" y="55" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="11" fill="#64748b">Tags (PII_LEVEL, PIPELINE_LAYER, SOURCE_SYSTEM) | Policies | DMFs | Pipeline Log</text>
+
+        <!-- Bronze -->
+        <rect x="50" y="95" width="220" height="45" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="1.5"/>
+        <text x="160" y="122" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="600" fill="#991b1b">BRONZE: PATIENTS, BILLING, APPTS</text>
+
+        <rect x="300" y="95" width="220" height="45" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="1.5"/>
+        <text x="410" y="122" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="600" fill="#991b1b">BRONZE: RX, DOCTORS, CLAIMS</text>
+
+        <rect x="550" y="95" width="220" height="45" rx="6" fill="#fffbeb" stroke="#fed7aa" stroke-width="1.5"/>
+        <text x="660" y="115" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="11" font-weight="500" fill="#92400e">PIPELINE_EXECUTION_LOG</text>
+        <text x="660" y="130" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="10" fill="#92400e">WH name, size, rows, duration</text>
+
+        <!-- Arrows to Silver -->
+        <line x1="160" y1="140" x2="160" y2="180" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="410" y1="140" x2="350" y2="180" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <!-- Silver -->
+        <rect x="60" y="185" width="380" height="42" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="250" y="210" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="500" fill="#475569">SILVER: STG_PATIENTS | STG_BILLING | STG_APPOINTMENTS</text>
+
+        <!-- Arrow to Gold -->
+        <line x1="250" y1="227" x2="320" y2="275" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <!-- Gold DT -->
+        <rect x="220" y="280" width="240" height="50" rx="8" fill="#eef2ff" stroke="#a5b4fc" stroke-width="2"/>
+        <text x="340" y="302" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="13" font-weight="700" fill="#3730a3">GOLD: PATIENT_ANALYTICS</text>
+        <text x="340" y="320" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="10" fill="#6366f1">Dynamic Table | Auto-refresh 1hr</text>
+
+        <!-- Arrows from Gold -->
+        <line x1="280" y1="330" x2="150" y2="380" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="400" y1="330" x2="500" y2="380" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="340" y1="330" x2="340" y2="380" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-blue)"/>
+
+        <!-- Output Views -->
+        <rect x="50" y="385" width="190" height="42" rx="6" fill="#f0f9ff" stroke="#7dd3fc" stroke-width="1.5"/>
+        <text x="145" y="410" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="11" font-weight="600" fill="#0369a1">REVENUE_DASHBOARD</text>
+
+        <rect x="420" y="385" width="180" height="42" rx="6" fill="#f0f9ff" stroke="#7dd3fc" stroke-width="1.5"/>
+        <text x="510" y="410" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="11" font-weight="600" fill="#0369a1">DEPT_METRICS</text>
+
+        <!-- Metadata Catalog -->
+        <rect x="255" y="385" width="155" height="42" rx="6" fill="#faf5ff" stroke="#d8b4fe" stroke-width="1.5"/>
+        <text x="332" y="404" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="11" font-weight="600" fill="#7c3aed">METADATA_CATALOG</text>
+        <text x="332" y="418" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="9" fill="#a78bfa">Unified context view</text>
+
+        <!-- Arrows to bottom -->
+        <line x1="145" y1="427" x2="145" y2="470" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+        <line x1="332" y1="427" x2="332" y2="470" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#arrow-purple)"/>
+        <line x1="510" y1="427" x2="510" y2="470" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+        <line x1="660" y1="140" x2="660" y2="470" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4"/>
+
+        <!-- Sharing Layer -->
+        <rect x="40" y="475" width="290" height="55" rx="8" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+        <text x="185" y="498" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="600" fill="#166534">DISTRIBUTION</text>
+        <text x="185" y="516" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="11" fill="#4ade80">Secure Share | Marketplace</text>
+
+        <!-- AI Layer -->
+        <rect x="360" y="475" width="410" height="55" rx="8" fill="#faf5ff" stroke="#d8b4fe" stroke-width="1.5"/>
+        <text x="565" y="498" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="600" fill="#7c3aed">AI CONTEXT LAYER</text>
+        <text x="565" y="516" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="11" fill="#a78bfa">Cortex Agent | Cortex Analyst | Cortex Search | Cortex Code</text>
+
+        <!-- Bottom labels -->
+        <rect x="40" y="555" width="730" height="45" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+        <text x="410" y="575" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="11" fill="#64748b">Warehouse Strategy: INGEST_WH (Gen2 S) | TRANSFORM_WH (Gen2 M) | ANALYTICS_WH (Adaptive, MQPL=XL)</text>
+        <text x="410" y="590" text-anchor="middle" font-family="-apple-system,system-ui,sans-serif" font-size="10" fill="#94a3b8">All metadata captured in PIPELINE_EXECUTION_LOG with warehouse_name, warehouse_size per run</text>
+
+        <!-- Arrow markers -->
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#94a3b8"/></marker>
+          <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#3b82f6"/></marker>
+          <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#22c55e"/></marker>
+          <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#7c3aed"/></marker>
+        </defs>
+      </svg>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: Governance Policies -->
+  <section class="slide" id="slide-4">
+    <span class="slide-number">4 / 8</span>
+    <h2>Data Governance Policies</h2>
+    <p>Five policy types provide defense-in-depth protection</p>
+    <table style="margin-top: 24px;">
+      <thead>
+        <tr><th>Policy</th><th>Applied To</th><th>What It Does</th><th>Role Behavior</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Masking</strong></td><td>SSN, Email, Phone, Address</td><td>Tag-based dynamic masking</td><td>SYSADMIN=clear, Clinical=last4, Analyst=fully masked</td></tr>
+        <tr><td><strong>Row Access</strong></td><td>PATIENTS.DEPARTMENT</td><td>Filters rows by department</td><td>Clinical sees only CARDIOLOGY</td></tr>
+        <tr><td><strong>Aggregation</strong></td><td>BILLING table</td><td>Min group size = 5</td><td>Prevents re-identification</td></tr>
+        <tr><td><strong>Join</strong></td><td>PATIENTS table</td><td>Must JOIN (no standalone SELECT)</td><td>Analysts cannot bulk-export</td></tr>
+        <tr><td><strong>Projection</strong></td><td>PRESCRIPTIONS.MEDICATION_NAME</td><td>Blocks column projection</td><td>Analysts cannot see Rx names</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight" style="margin-top: 24px;">
+      <p>One masking policy reads <code>PII_LEVEL</code> tag via <code>SYSTEM$GET_TAG_ON_CURRENT_COLUMN()</code> — scales to all PII columns automatically. Uses <code>IS_ROLE_IN_SESSION()</code> for correct role hierarchy traversal.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: Lineage & Quality -->
+  <section class="slide" id="slide-5">
+    <span class="slide-number">5 / 8</span>
+    <h2>Lineage & Data Quality</h2>
+    <div class="two-col">
+      <div class="card">
+        <h3>Lineage</h3>
+        <p style="font-size:15px;"><code>SNOWFLAKE.CORE.GET_LINEAGE()</code></p>
+        <ul style="font-size:15px;">
+          <li><strong>Downstream:</strong> "If I change PATIENTS, what breaks?"<br/>4 dependent objects, 3 hops</li>
+          <li><strong>Upstream:</strong> "Where does dashboard data come from?"<br/>3 source tables traced back</li>
+          <li><strong>Column-level:</strong> "Does SSN leak to GOLD?"<br/>Tracked through every pipeline hop</li>
+          <li><strong>LINEAGE_CACHE:</strong> Pre-computed view for AI consumption</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Data Quality (DMFs)</h3>
+        <p style="font-size:15px;">Continuous monitoring, auto-scheduled hourly</p>
+        <table style="font-size:14px;">
+          <tr><td><strong>System DMFs</strong></td><td>NULL_COUNT, DUPLICATE_COUNT, ROW_COUNT</td></tr>
+          <tr><td><strong>Custom: SSN</strong></td><td>Validates XXX-XX-XXXX format</td></tr>
+          <tr><td><strong>Custom: Phone</strong></td><td>Validates (XXX) XXX-XXXX format</td></tr>
+        </table>
+        <p style="font-size:14px; color:#64748b; margin-top:12px;">Bad data injected: 2 invalid SSNs, 1 invalid phone, 2 dup emails</p>
+        <p style="font-size:14px; color:#64748b;">Visible: Snowsight > Data > Governance > Quality</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6: Metadata Layer -->
+  <section class="slide" id="slide-6">
+    <span class="slide-number">6 / 8</span>
+    <h2>Metadata Layer & Pipeline Context</h2>
+    <p>Every pipeline run and object classification captured for AI consumption</p>
+    <div class="two-col" style="margin-top: 16px;">
+      <div class="card">
+        <h3>Tags (8 types)</h3>
+        <table style="font-size:14px;">
+          <tr><td><code>PIPELINE_LAYER</code></td><td>BRONZE / SILVER / GOLD</td></tr>
+          <tr><td><code>SOURCE_SYSTEM</code></td><td>EHR, BILLING_SYSTEM, CLAIMS_PORTAL</td></tr>
+          <tr><td><code>LOAD_FREQUENCY</code></td><td>REAL_TIME, HOURLY, DAILY, WEEKLY</td></tr>
+          <tr><td><code>SLA_FRESHNESS_SECONDS</code></td><td>3600, 86400, 604800</td></tr>
+          <tr><td><code>PII_LEVEL</code></td><td>HIGH, MEDIUM, LOW</td></tr>
+          <tr><td><code>DATA_CLASSIFICATION</code></td><td>PHI, PII, FINANCIAL</td></tr>
+          <tr><td><code>DATA_DOMAIN</code></td><td>CLINICAL, FINANCIAL, ADMIN</td></tr>
+          <tr><td><code>RETENTION_DAYS</code></td><td>365, 2555 (HIPAA 7yr)</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>PIPELINE_EXECUTION_LOG</h3>
+        <p style="font-size:14px;">Per-run details:</p>
+        <ul style="font-size:14px;">
+          <li><code>source_table</code> → <code>target_table</code></li>
+          <li><code>layer_from</code> → <code>layer_to</code></li>
+          <li><code>rows_read</code> / <code>rows_written</code> / <code>rows_rejected</code></li>
+          <li><code>warehouse_name</code> + <code>warehouse_size</code></li>
+          <li><code>duration_seconds</code> + <code>status</code></li>
+          <li><code>query_id</code> (links to QUERY_HISTORY)</li>
+        </ul>
+        <p style="font-size:13px; color:#64748b; margin-top:8px;">METADATA_CATALOG view unifies tags + pipeline + lineage + quality</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 7: AI Context -->
+  <section class="slide" id="slide-7">
+    <span class="slide-number">7 / 8</span>
+    <h2>AI Context Integration</h2>
+    <p>Metadata feeds directly into Snowflake AI services</p>
+    <table style="margin-top: 20px;">
+      <thead>
+        <tr><th>AI Service</th><th>Integration</th><th>Example Question</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Cortex Agent</strong></td><td>Multi-tool: healthcare + metadata + search</td><td>"Is billing data fresh and what feeds the dashboard?"</td></tr>
+        <tr><td><strong>Cortex Analyst</strong></td><td>Semantic model over pipeline log + catalog</td><td>"Pipeline success rate by layer?"</td></tr>
+        <tr><td><strong>Cortex Search</strong></td><td>Indexed on descriptions, layer, classification</td><td>"Find tables with patient billing data"</td></tr>
+        <tr><td><strong>Cortex Code</strong></td><td>CONTEXT.md with layer map, tag inventory</td><td>Generates SQL respecting layer boundaries</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight" style="margin-top: 24px;">
+      <p>HEALTHCARE_METADATA_AGENT combines 3 tools: healthcare analytics (Cortex Analyst), pipeline metadata (Cortex Analyst), and table discovery (Cortex Search) — answering both business AND operational questions.</p>
+    </div>
+    <div class="two-col" style="margin-top: 20px;">
+      <div class="card">
+        <h3>Metadata Semantic Model Metrics</h3>
+        <ul style="font-size:14px;">
+          <li><code>pipeline_success_rate</code></li>
+          <li><code>avg_duration</code></li>
+          <li><code>total_rows_rejected</code></li>
+          <li><code>rejection_rate</code></li>
+          <li><code>avg_staleness_seconds</code></li>
+          <li><code>tables_with_failures</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Agent Sample Prompts</h3>
+        <ul style="font-size:14px;">
+          <li>"Which pipelines failed in the last 3 days?"</li>
+          <li>"What warehouse runs the gold layer?"</li>
+          <li>"Show me all PHI tables in the gold layer"</li>
+          <li>"Average revenue per patient by department?"</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 8: Takeaways -->
+  <section class="slide" id="slide-8">
+    <span class="slide-number">8 / 8</span>
+    <h2>Key Takeaways</h2>
+    <div style="margin-top: 20px;">
+      <div style="display:flex; align-items:flex-start; margin-bottom:20px;">
+        <div style="min-width:36px; height:36px; background:#eff6ff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:16px; font-weight:700; color:#1e40af;">1</div>
+        <div><strong>Tag once, protect everywhere</strong><br/><span style="color:#64748b;">One masking policy + PII_LEVEL tag = automatic coverage across all sensitive columns</span></div>
+      </div>
+      <div style="display:flex; align-items:flex-start; margin-bottom:20px;">
+        <div style="min-width:36px; height:36px; background:#eff6ff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:16px; font-weight:700; color:#1e40af;">2</div>
+        <div><strong>Defense in depth</strong><br/><span style="color:#64748b;">5 policy types work together (masking, row access, aggregation, join, projection)</span></div>
+      </div>
+      <div style="display:flex; align-items:flex-start; margin-bottom:20px;">
+        <div style="min-width:36px; height:36px; background:#eff6ff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:16px; font-weight:700; color:#1e40af;">3</div>
+        <div><strong>Medallion metadata</strong><br/><span style="color:#64748b;">PIPELINE_LAYER + SOURCE_SYSTEM + LOAD_FREQUENCY tags classify every object</span></div>
+      </div>
+      <div style="display:flex; align-items:flex-start; margin-bottom:20px;">
+        <div style="min-width:36px; height:36px; background:#eff6ff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:16px; font-weight:700; color:#1e40af;">4</div>
+        <div><strong>Pipeline observability</strong><br/><span style="color:#64748b;">Every run logged with source, target, warehouse name/size, rows, duration, status</span></div>
+      </div>
+      <div style="display:flex; align-items:flex-start; margin-bottom:20px;">
+        <div style="min-width:36px; height:36px; background:#eff6ff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:16px; font-weight:700; color:#1e40af;">5</div>
+        <div><strong>Built-in lineage + quality</strong><br/><span style="color:#64748b;">No external tools; column-level tracking + continuous DMF monitoring</span></div>
+      </div>
+      <div style="display:flex; align-items:flex-start; margin-bottom:20px;">
+        <div style="min-width:36px; height:36px; background:#eff6ff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:16px; font-weight:700; color:#1e40af;">6</div>
+        <div><strong>AI-ready metadata</strong><br/><span style="color:#64748b;">METADATA_CATALOG feeds Cortex Agent, Analyst, Search, and Code natively</span></div>
+      </div>
+      <div style="display:flex; align-items:flex-start; margin-bottom:20px;">
+        <div style="min-width:36px; height:36px; background:#eff6ff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:16px; font-weight:700; color:#1e40af;">7</div>
+        <div><strong>Shareable intelligence</strong><br/><span style="color:#64748b;">Governed data + semantic model + AI agent = distributable analytics product</span></div>
+      </div>
+    </div>
+    <div style="margin-top:24px; padding:20px; background:#f8fafc; border-radius:8px; text-align:center;">
+      <p style="font-size:20px; font-weight:600; color:#1e293b; margin:0;">All governance, metadata, and AI context is platform-native. No external tools required.</p>
+    </div>
+  </section>
+
+</body>
+</html>
